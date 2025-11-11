@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Détail du tutoriel - Moez Tutoriels</title>
+  <link rel="stylesheet" href="./assets/templatemo-cyborg-gaming.css" />
+  <link rel="stylesheet" href="./assets/fontawesome.css" />
+</head>
+
+<body>
+  <div class="container mt-5">
+    <a href="index.html" class="btn btn-outline-light mb-3">← Retour</a>
+    <h2 id="title" class="text-light"></h2>
+
+    <div class="ratio ratio-16x9 my-3">
+      <iframe id="video" src="" allowfullscreen></iframe>
+    </div>
+
+    <p id="desc" class="lead text-light"></p>
+
+    <div class="text-center mt-5">
+      <a href="../back/tutoriels.html" class="btn btn-outline-light">Accéder au Back Office</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import TutorialController from "../../controllers/tutorialController.js";
+    TutorialController.detail();
+  </script>
+</body>
+</html>

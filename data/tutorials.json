@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "title": "Configurer un live",
+    "slug": "configurer-un-live",
+    "lang": "FR",
+    "durationMin": 8,
+    "level": "Débutant",
+    "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "contentMd": "Apprenez à configurer votre premier live avec OBS et Cyborg Gaming.",
+    "idCategory": 1,
+    "published": true
+  },
+  {
+    "id": 2,
+    "title": "Create an overlay",
+    "slug": "create-overlay",
+    "lang": "EN",
+    "durationMin": 10,
+    "level": "Intermediate",
+    "videoUrl": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "contentMd": "Learn how to design a simple overlay for your stream.",
+    "idCategory": 2,
+    "published": true
+  }
+]

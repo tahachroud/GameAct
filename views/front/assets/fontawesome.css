@@ -1,0 +1,6 @@
+/* FontAwesome - version simplifiée */
+.fa { display: inline-block; font: normal normal normal 14px/1 FontAwesome; }
+.fa-play:before { content: "\f04b"; }
+.fa-user:before { content: "\f007"; }
+.fa-star:before { content: "\f005"; }
+.fa-heart:before { content: "\f004"; }
