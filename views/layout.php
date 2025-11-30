@@ -37,10 +37,10 @@
 
         aside.app-sidebar {
             position: fixed;
-            top: 82px; /* under the frontend header */
+            top: 140px; /* under the frontend header */
             left: 0;
             width: 260px;
-            height: calc(100% - 120px);
+            height: calc(100% - 140px);
             overflow-y: auto;
             z-index: 999;
         }

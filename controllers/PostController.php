@@ -188,5 +188,36 @@ class PostController {
 
     include __DIR__ . '/../views/layout_front.php';
 }
+/* ===============================
+   READ POST OUT LOUD (TTS)
+================================= */
+public function readPostAudio()
+{
+    $id = $_GET['id'] ?? null;
+
+    if (!$id) {
+        echo json_encode(["error" => "Missing post ID"]);
+        exit;
+    }
+
+    $postModel = new Post($this->db);
+    $post = $postModel->find($id);
+
+    if (!$post) {
+        echo json_encode(["error" => "Post not found"]);
+        exit;
+    }
+
+    require_once __DIR__ . '/../services/TTSService.php';
+    $tts = new TTSService();
+
+    $audioBase64 = $tts->generateAudio($post['content']);
+
+    echo json_encode([
+        "audio" => $audioBase64
+    ]);
+    exit;
+}
+
 
 }

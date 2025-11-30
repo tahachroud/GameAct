@@ -73,6 +73,10 @@ $shareModel = new Share();
                                 <button class="action-btn like-btn" data-post-id="<?= $item['id'] ?>">
                                     ❤️ <span class="like-count">0</span>
                                 </button>
+                                <button class="action-btn" onclick="readPost(<?= $item['id'] ?>)">
+                                    🔊 Listen
+                                </button>
+
 
                                 <button class="action-btn comment-btn">
                                     💬 <span><?= $commentCount ?></span>

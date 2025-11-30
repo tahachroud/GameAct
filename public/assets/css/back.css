@@ -275,10 +275,12 @@
     box-shadow: 0 0 8px #fff;
 }
 /* Correct sidebar alignment under the 80px header */
+/* Adjusted sidebar position */
 .gameact-sidebar,
 aside.app-sidebar {
     position: fixed;
-    top: 80px !important; /* EXACT value from your header */
-    height: calc(100% - 80px) !important;
+    top: 120px;
+    height: calc(100% - 120px);
 }
+
 

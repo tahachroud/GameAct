@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 require_once __DIR__ . '/config/Database.php';
@@ -145,6 +144,12 @@ switch ($action) {
         $content = ob_get_clean();
         include 'views/layout_front.php';
         break;
+    case 'tts_read':
+        require_once __DIR__ . '/services/TTSService.php';
+        $controller = new PostController($db);
+        $controller->readPostAudio();
+        break;
+
 
 
 
@@ -159,4 +164,3 @@ switch ($action) {
     default:
         echo "<h1>404 - Page not found</h1>";
 }
-

@@ -73,6 +73,7 @@
 
   <!-- MUST BE LAST (validation attaches after DOM + feed build) -->
   <script src="public/assets/js/community_validation.js"></script>
+  <script src="public/assets/js/tts.js"></script>
 
 </body>
 </html>
