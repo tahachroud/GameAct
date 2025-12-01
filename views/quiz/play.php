@@ -2,7 +2,6 @@
 $pageTitle = "Play Quiz - " . htmlspecialchars($quiz['titre']);
 $page = 'quiz_play';
 
-// Serialize questions to JavaScript
 $questionsJSON = json_encode($questions);
 
 $customCSS = '
@@ -307,6 +306,85 @@ $customCSS = '
     transform: scale(1.05);
     color: #fff;
 }
+
+.timer-container {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: linear-gradient(145deg, #27292a, #1f2122);
+    border: 3px solid #e75e8d;
+    border-radius: 15px;
+    padding: 20px 30px;
+    z-index: 1000;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.timer-container.warning {
+    border-color: #ff4444;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.timer-label {
+    color: #aaa;
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.timer-display {
+    font-size: 48px;
+    font-weight: bold;
+    color: #4CAF50;
+    text-align: center;
+    font-family: monospace;
+}
+
+.timer-display.warning {
+    color: #ff4444;
+}
+
+.powerup-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.powerup-btn {
+    background: linear-gradient(145deg, #27292a, #1f2122);
+    border: 2px solid #e75e8d;
+    color: #fff;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 15px;
+}
+
+.powerup-btn:hover:not(.used) {
+    background: linear-gradient(145deg, #e75e8d, #d64077);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 94, 141, 0.4);
+}
+
+.powerup-btn.used {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.powerup-btn i {
+    margin-right: 5px;
+}
 ';
 
 include 'views/header.php';
@@ -327,6 +405,12 @@ include 'views/header.php';
                             <div class="quiz-header">
                                 <h2><?php echo htmlspecialchars($quiz['titre']); ?></h2>
                                 <p style="color: #666;"><?php echo htmlspecialchars($quiz['description']); ?></p>
+                                
+                                <div class="timer-container" id="timer-container">
+                                    <div class="timer-label">Time Remaining</div>
+                                    <div class="timer-display" id="timer-display">3:00</div>
+                                </div>
+                                
                                 <div class="quiz-progress">
                                     <span class="progress-info">
                                         Question <span id="current-question">1</span> of <span id="total-questions"><?php echo count($questions); ?></span>
@@ -338,7 +422,6 @@ include 'views/header.php';
                             </div>
 
                             <div id="question-container">
-                                <!-- Questions will be displayed here one by one -->
                             </div>
 
                             <div style="text-align: center;">
@@ -349,30 +432,9 @@ include 'views/header.php';
                         </div>
 
                         <div class="result-container" id="result-container">
-                            <h2 style="color: #fff; margin-bottom: 20px;">Quiz Completed!</h2>
-                            <div class="result-score" id="final-score">0%</div>
-                            <div class="result-message" id="result-message">Great Job!</div>
-                            
-                            <div class="result-stats">
-                                <div class="stat-box">
-                                    <h4>Correct Answers</h4>
-                                    <p id="correct-count">0/0</p>
-                                </div>
-                                <div class="stat-box">
-                                    <h4>Total Points</h4>
-                                    <p id="total-points">0</p>
-                                </div>
-                                <div class="stat-box">
-                                    <h4>Time Taken</h4>
-                                    <p id="time-taken">0:00</p>
-                                </div>
-                            </div>
-
-                            <!-- Buttons will be added dynamically by JavaScript -->
                         </div>
-                        
-                    <?php endif; ?>
 
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -382,7 +444,6 @@ include 'views/header.php';
 
 <?php
 $customJS = '
-// Quiz data from PHP
 const quizData = ' . $questionsJSON . ';
 const quizId = ' . $quiz['id_quiz'] . ';
 const totalQuestions = quizData.length;
@@ -393,47 +454,115 @@ let correctAnswers = 0;
 let userAnswers = {};
 let startTime = Date.now();
 
-// Initialize quiz
+let timeRemaining = 180;
+let timerInterval = null;
+let quizFailed = false;
+let fiftyFiftyUsed = false;
+let hintUsed = false;
+
 document.addEventListener("DOMContentLoaded", function() {
     if (quizData && quizData.length > 0) {
         displayQuestion();
     }
 });
 
-// Display current question
+function startTimer() {
+    timerInterval = setInterval(function() {
+        if (quizFailed) {
+            clearInterval(timerInterval);
+            return;
+        }
+        
+        timeRemaining--;
+        
+        const minutes = Math.floor(timeRemaining / 60);
+        const seconds = timeRemaining % 60;
+        const display = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+        
+        document.getElementById("timer-display").textContent = display;
+        
+        if (timeRemaining <= 60 && timeRemaining > 0) {
+            document.getElementById("timer-display").classList.add("warning");
+            document.getElementById("timer-container").classList.add("warning");
+        }
+        
+        if (timeRemaining <= 0) {
+            clearInterval(timerInterval);
+            quizFailed = true;
+            timeUp();
+        }
+    }, 1000);
+}
+
+function timeUp() {
+    document.getElementById("quiz-content").style.display = "none";
+    const resultHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div style="font-size: 80px; margin-bottom: 20px;">⏰</div>
+            <h2 style="color: #ff4444; font-size: 36px; margin-bottom: 15px;">Time is Up!</h2>
+            <p style="color: #aaa; font-size: 18px; margin-bottom: 30px;">You ran out of time. Quiz failed.</p>
+            <div style="background: linear-gradient(145deg, #ff4444, #cc0000); padding: 30px; border-radius: 15px; margin: 30px auto; max-width: 300px;">
+                <div style="font-size: 72px; font-weight: bold; color: white;">0%</div>
+                <div style="font-size: 18px; color: #ffcccc; margin-top: 10px;">Final Score</div>
+            </div>
+            <div style="margin-top: 40px; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+                <a href="index.php?page=quiz_play&id=` + quizId + `" style="padding: 15px 40px; background: linear-gradient(145deg, #e75e8d, #d64077); border: 2px solid #c4356a; color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">
+                    <i class="fa fa-refresh"></i> Try Again
+                </a>
+                <a href="index.php?page=quiz_list" style="padding: 15px 40px; background: linear-gradient(145deg, #27292a, #1f2122); border: 2px solid #e75e8d; color: white; text-decoration: none; border-radius: 10px; font-weight: 600;">
+                    <i class="fa fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+    `;
+    document.getElementById("result-container").innerHTML = resultHTML;
+    document.getElementById("result-container").classList.add("show");
+}
+
 function displayQuestion() {
+    if (currentQuestionIndex === 0) {
+        startTimer();
+    }
+    
     const question = quizData[currentQuestionIndex];
     const container = document.getElementById("question-container");
     
-    // Update progress
     document.getElementById("current-question").textContent = currentQuestionIndex + 1;
     const progress = ((currentQuestionIndex + 1) / totalQuestions) * 100;
     document.getElementById("progress-bar").style.width = progress + "%";
     
-    // Build question HTML
     const questionHTML = `
         <div class="question-card active">
             <div class="question-text">
-                <strong>Question ${currentQuestionIndex + 1}:</strong><br>
-                ${escapeHtml(question.texte_question)}
+                <strong>Question ` + (currentQuestionIndex + 1) + `:</strong><br>
+                ` + escapeHtml(question.texte_question) + `
+            </div>
+
+            <div class="powerup-buttons">
+                <button class="powerup-btn" id="btn-fifty-fifty" onclick="useFiftyFifty()">
+                    <i class="fa fa-random"></i> 50/50
+                </button>
+                <button class="powerup-btn" id="btn-hint" onclick="useHint()">
+                    <i class="fa fa-lightbulb"></i> Hint
+                </button>
             </div>
 
             <div class="answers-container">
                 <div class="answer-option" data-answer="A" onclick="selectAnswer(\'A\')">
                     <span class="option-letter">A</span>
-                    <span class="option-text">${escapeHtml(question.option_a)}</span>
+                    <span class="option-text">` + escapeHtml(question.option_a) + `</span>
                 </div>
                 <div class="answer-option" data-answer="B" onclick="selectAnswer(\'B\')">
                     <span class="option-letter">B</span>
-                    <span class="option-text">${escapeHtml(question.option_b)}</span>
+                    <span class="option-text">` + escapeHtml(question.option_b) + `</span>
                 </div>
                 <div class="answer-option" data-answer="C" onclick="selectAnswer(\'C\')">
                     <span class="option-letter">C</span>
-                    <span class="option-text">${escapeHtml(question.option_c)}</span>
+                    <span class="option-text">` + escapeHtml(question.option_c) + `</span>
                 </div>
                 <div class="answer-option" data-answer="D" onclick="selectAnswer(\'D\')">
                     <span class="option-letter">D</span>
-                    <span class="option-text">${escapeHtml(question.option_d)}</span>
+                    <span class="option-text">` + escapeHtml(question.option_d) + `</span>
                 </div>
             </div>
 
@@ -446,28 +575,36 @@ function displayQuestion() {
     
     container.innerHTML = questionHTML;
     document.getElementById("btn-next").classList.remove("show");
+    
+    if (fiftyFiftyUsed) {
+        const btn = document.getElementById("btn-fifty-fifty");
+        btn.classList.add("used");
+        btn.disabled = true;
+        btn.innerHTML = \'<i class="fa fa-random"></i> 50/50 (Used)\';
+    }
+    if (hintUsed) {
+        const btn = document.getElementById("btn-hint");
+        btn.classList.add("used");
+        btn.disabled = true;
+        btn.innerHTML = \'<i class="fa fa-lightbulb"></i> Hint (Used)\';
+    }
 }
 
-// Select answer
 function selectAnswer(answer) {
     const question = quizData[currentQuestionIndex];
     const correct = question.reponse_correcte.toUpperCase();
     
-    // Store user answer
     userAnswers[question.id_question] = answer;
     
-    // Disable all options
     const allOptions = document.querySelectorAll(".answer-option");
     allOptions.forEach(option => {
         option.style.pointerEvents = "none";
         option.classList.add("disabled");
     });
     
-    // Get selected option
-    const selectedOption = document.querySelector(`[data-answer="${answer}"]`);
+    const selectedOption = document.querySelector(`[data-answer="` + answer + `"]`);
     selectedOption.classList.add("selected");
     
-    // Check if correct
     if (answer === correct) {
         selectedOption.classList.add("correct");
         selectedOption.innerHTML += \'<i class="fa fa-check answer-icon correct"></i>\';
@@ -477,174 +614,173 @@ function selectAnswer(answer) {
         selectedOption.classList.add("incorrect");
         selectedOption.innerHTML += \'<i class="fa fa-times answer-icon incorrect"></i>\';
         
-        // Show correct answer
-        const correctOption = document.querySelector(`[data-answer="${correct}"]`);
+        const correctOption = document.querySelector(`[data-answer="` + correct + `"]`);
         correctOption.classList.add("correct");
         correctOption.innerHTML += \'<i class="fa fa-check answer-icon correct"></i>\';
     }
     
-    // Show explanation if exists
     if (question.explication && question.explication.trim() !== "") {
         document.getElementById("explanation-text").textContent = question.explication;
         document.getElementById("explanation-box").classList.add("show");
     }
     
-    // Show next button
     document.getElementById("btn-next").classList.add("show");
 }
 
-// Next question button
+function useFiftyFifty() {
+    if (fiftyFiftyUsed) return;
+    
+    const question = quizData[currentQuestionIndex];
+    const correct = question.reponse_correcte.toUpperCase();
+    const allOptions = ["A", "B", "C", "D"];
+    const wrongOptions = allOptions.filter(opt => opt !== correct);
+    
+    const optionsToRemove = [];
+    while (optionsToRemove.length < 2) {
+        const randomIndex = Math.floor(Math.random() * wrongOptions.length);
+        const option = wrongOptions[randomIndex];
+        if (!optionsToRemove.includes(option)) {
+            optionsToRemove.push(option);
+        }
+    }
+    
+    optionsToRemove.forEach(option => {
+        const optionElement = document.querySelector(\'[data-answer="\' + option + \'"]\');
+        if (optionElement) {
+            optionElement.style.opacity = "0.3";
+            optionElement.style.pointerEvents = "none";
+            optionElement.style.textDecoration = "line-through";
+        }
+    });
+    
+    fiftyFiftyUsed = true;
+    const btn = document.getElementById("btn-fifty-fifty");
+    btn.classList.add("used");
+    btn.disabled = true;
+    btn.innerHTML = \'<i class="fa fa-random"></i> 50/50 (Used)\';
+}
+
+function useHint() {
+    if (hintUsed) return;
+    
+    const question = quizData[currentQuestionIndex];
+    
+    if (question.explication && question.explication.trim() !== "") {
+        document.getElementById("explanation-text").textContent = question.explication;
+        document.getElementById("explanation-box").classList.add("show");
+    } else {
+        document.getElementById("explanation-text").textContent = "No hint available for this question.";
+        document.getElementById("explanation-box").classList.add("show");
+    }
+    
+    hintUsed = true;
+    const btn = document.getElementById("btn-hint");
+    btn.classList.add("used");
+    btn.disabled = true;
+    btn.innerHTML = \'<i class="fa fa-lightbulb"></i> Hint (Used)\';
+}
+
 document.getElementById("btn-next").addEventListener("click", function() {
     currentQuestionIndex++;
     
     if (currentQuestionIndex < totalQuestions) {
         displayQuestion();
     } else {
-        showResults();
+        submitQuiz();
     }
 });
 
-// Show final results
-function showResults() {
-    const percentage = Math.round((correctAnswers / totalQuestions) * 100);
-    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
-    const minutes = Math.floor(timeTaken / 60);
-    const seconds = timeTaken % 60;
+function submitQuiz() {
+    clearInterval(timerInterval);
     
-    // Hide quiz content
-    document.getElementById("quiz-content").style.display = "none";
+    const endTime = Date.now();
+    const timeTaken = Math.floor((endTime - startTime) / 1000);
+    const maxScore = quizData.reduce((sum, q) => sum + parseInt(q.points), 0);
+    const percentage = Math.round((score / maxScore) * 100);
     
-    // Show results
-    const resultContainer = document.getElementById("result-container");
-    resultContainer.classList.add("show");
-    
-    document.getElementById("final-score").textContent = percentage + "%";
-    document.getElementById("correct-count").textContent = correctAnswers + "/" + totalQuestions;
-    document.getElementById("total-points").textContent = score;
-    document.getElementById("time-taken").textContent = minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-    
-    // Set message based on score
     let message = "";
     if (percentage >= 90) {
-        message = "Outstanding! You are a Gaming Legend! 🏆";
+        message = "Outstanding! 🎉";
     } else if (percentage >= 70) {
-        message = "Great Job! You know your games! 🎮";
+        message = "Great Job! 👏";
     } else if (percentage >= 50) {
-        message = "Good effort! Keep learning! 📚";
+        message = "Good Effort! 👍";
     } else {
-        message = "Keep practicing! You will get better! 💪";
+        message = "Keep Practicing! 💪";
     }
-    document.getElementById("result-message").textContent = message;
     
-    // Add navigation buttons with enhanced styling
-    const buttonsHTML = `
-        <div style="margin-top: 40px; text-align: center; display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
-            <a href="index.php?page=quiz_play&id=${quizId}" 
-               class="nav-button replay-button" 
-               style="padding: 18px 45px; 
-                      font-size: 18px; 
-                      text-decoration: none; 
-                      display: inline-flex; 
-                      align-items: center; 
-                      gap: 10px;
-                      background: linear-gradient(145deg, #e75e8d, #d64077); 
-                      border: 3px solid #c4356a; 
-                      color: white; 
-                      border-radius: 15px; 
-                      font-weight: 700;
-                      box-shadow: 0 8px 20px rgba(231, 94, 141, 0.4);
-                      transition: all 0.3s ease;
-                      cursor: pointer;">
-                <i class="fa fa-refresh"></i> Replay Quiz
+    document.getElementById("quiz-content").style.display = "none";
+    
+    const resultHTML = `
+        <div style="font-size: 80px; margin-bottom: 20px;">🎮</div>
+        <div class="result-score">` + percentage + `%</div>
+        <div class="result-message">` + message + `</div>
+        
+        <div class="result-stats">
+            <div class="stat-box">
+                <h4>Correct Answers</h4>
+                <p>` + correctAnswers + ` / ` + totalQuestions + `</p>
+            </div>
+            <div class="stat-box">
+                <h4>Time Taken</h4>
+                <p>` + Math.floor(timeTaken / 60) + `m ` + (timeTaken % 60) + `s</p>
+            </div>
+            <div class="stat-box">
+                <h4>Score</h4>
+                <p>` + score + ` / ` + maxScore + `</p>
+            </div>
+        </div>
+        
+        <div class="result-actions">
+            <a href="index.php?page=quiz_play&id=` + quizId + `">
+                <i class="fa fa-refresh"></i> Try Again
             </a>
-            <a href="index.php?page=quiz_list" 
-               class="nav-button back-button" 
-               style="padding: 18px 45px; 
-                      font-size: 18px; 
-                      text-decoration: none; 
-                      display: inline-flex; 
-                      align-items: center; 
-                      gap: 10px;
-                      background: linear-gradient(145deg, #27292a, #1f2122); 
-                      border: 3px solid #e75e8d; 
-                      color: white; 
-                      border-radius: 15px; 
-                      font-weight: 700;
-                      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-                      transition: all 0.3s ease;
-                      cursor: pointer;">
-                <i class="fa fa-arrow-left"></i> Back to Quiz List
+            <a href="index.php?page=quiz_list">
+                <i class="fa fa-arrow-left"></i> Back to List
             </a>
         </div>
-        <style>
-            .nav-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 12px 25px rgba(231, 94, 141, 0.6);
-            }
-            .replay-button:hover {
-                background: linear-gradient(145deg, #ff6b9d, #e75e8d);
-                border-color: #ff6b9d;
-            }
-            .back-button:hover {
-                background: linear-gradient(145deg, #e75e8d, #d64077);
-                border-color: #ff6b9d;
-            }
-        </style>
     `;
     
-    document.getElementById("result-container").insertAdjacentHTML("beforeend", buttonsHTML);
+    document.getElementById("result-container").innerHTML = resultHTML;
+    document.getElementById("result-container").classList.add("show");
     
-    // Submit results to server in background (using hidden iframe - NO AJAX!)
     submitResultsToServer(timeTaken);
 }
 
-// Submit results to server WITHOUT leaving page (using iframe technique)
 function submitResultsToServer(timeTaken) {
-    // Create hidden iframe for form submission
     const iframe = document.createElement("iframe");
-    iframe.name = "hidden_iframe";
     iframe.style.display = "none";
+    iframe.name = "hiddenFrame";
     document.body.appendChild(iframe);
     
-    // Create form that targets the iframe
     const form = document.createElement("form");
     form.method = "POST";
-    form.action = "index.php?page=quiz_submit";
-    form.target = "hidden_iframe"; // Submit to iframe, not main window
-    form.style.display = "none";
+    form.action = "index.php?page=submit_quiz_results";
+    form.target = "hiddenFrame";
     
-    // Add quiz ID
-    const quizInput = document.createElement("input");
-    quizInput.type = "hidden";
-    quizInput.name = "id_quiz";
-    quizInput.value = quizId;
-    form.appendChild(quizInput);
+    const inputs = {
+        id_quiz: quizId,
+        score: score,
+        time_taken: timeTaken
+    };
     
-    // Add time
-    const timeInput = document.createElement("input");
-    timeInput.type = "hidden";
-    timeInput.name = "temps_ecoule";
-    timeInput.value = timeTaken;
-    form.appendChild(timeInput);
-    
-    // Add all answers
-    for (const questionId in userAnswers) {
-        const answerInput = document.createElement("input");
-        answerInput.type = "hidden";
-        answerInput.name = "answer_" + questionId;
-        answerInput.value = userAnswers[questionId];
-        form.appendChild(answerInput);
+    for (const key in inputs) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = inputs[key];
+        form.appendChild(input);
     }
     
-    // Add form to page and submit to iframe
     document.body.appendChild(form);
     form.submit();
     
-    // Note: Form submits to iframe, page stays on results screen
-    console.log("✓ Results submitted to database in background");
+    setTimeout(() => {
+        document.body.removeChild(form);
+        document.body.removeChild(iframe);
+    }, 1000);
 }
 
-// Escape HTML to prevent XSS
 function escapeHtml(text) {
     const div = document.createElement("div");
     div.textContent = text;
