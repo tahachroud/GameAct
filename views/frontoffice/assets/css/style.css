@@ -389,15 +389,24 @@ footer p {
   text-decoration: underline;
 }
 
+.form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  max-width: 95%;
+}
+
 .form-group {
-  margin-bottom: 1.25rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column; 
 }
 
 label {
   display: block;
   font-size: 0.875rem;
   color: #fff;
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 label .required {
@@ -443,6 +452,30 @@ input[type="checkbox"] {
   margin: 0;
 }
 
+input.error, select.error {
+    border-color: #ff4d4d;
+    background-color: #ffe6e6;
+}
+
+input.success, select.success {
+    border-color: #4CAF50;
+    background-color: #e8f7e8;
+}
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 12px;
+    margin-top: 4px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.error-message.show {
+    display: block;
+    opacity: 1;
+}
+
 .login-button {
   width: 100%;
   padding: 0.75rem;
@@ -483,7 +516,6 @@ input[type="checkbox"] {
 
 .register-button {
   width: 99%;
-  padding: 0.75rem;
   background-color: #e75e8d;
   color: white;
   border: none;
@@ -509,17 +541,37 @@ input[type="checkbox"] {
   background: #545759;
   border: 1px solid #1f2122;
   border-radius: 8px;
-  padding: 2rem;
+  padding-top: 0.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-bottom: 1.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   max-width: 400px;
   width: 100%;
+  position: relative;
+}
+
+.server-error-box {
+    margin-top: 10px;
+    margin-bottom: 8px;
+    text-align: left;
+    color: #ff6b6b;
+    font-size: 13px;
+}
+
+.server-error-box div {
+    display: inline-block;
+    background-color: #2b0000;
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 4px;
+    padding: 0.5rem;
 }
 
 .register-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
 }
 
 .register-title {
@@ -641,4 +693,118 @@ input[type="checkbox"] {
 .button:disabled {
   cursor: default;
   opacity: .24;
+}
+
+.password-strength {
+    margin: 8px 0;
+    height: 6px;
+    background: #333537;
+    border-radius: 3px;
+    overflow: hidden;
+    width: 99%;
+}
+
+.strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.4s ease, background-color 0.4s ease;
+    border-radius: 3px;
+}
+
+.strength-weak    { background: #ff4d4d; width: 33% !important; }
+.strength-medium  { background: #ffb84d; width: 66% !important; }
+.strength-strong  { background: #4caf50; width: 100% !important; }
+
+.password-hint {
+    font-size: 0.8rem;
+    color: #888;
+    display: block;
+    margin-top: 4px;
+}
+
+.dob-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-size: 16px;
+    color: #333;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.dob-input:hover {
+    border-color: #ec6090;
+}
+
+.dob-input:focus {
+    outline: none;
+    border-color: #e75e8d;
+    box-shadow: 0 0 0 4px rgba(231, 94, 141, 0.15);
+}
+
+.dob-input::placeholder {
+    color: #aaa;
+}
+
+.dob-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    filter: invert(40%) sepia(80%) saturate(3000%) hue-rotate(300deg); 
+}
+
+.dob-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+.dob-input:not(:focus):not(:valid) {
+    color: #aaa;
+}
+
+.dob-input:focus {
+    box-shadow: 
+        0 0 0 4px rgba(231, 94, 141, 0.15),
+        0 8px 25px rgba(231, 94, 141, 0.12);
+    transform: translateY(-2px);
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px 14px;        
+    font-size: 14px;           
+    height: 45px;              
+    line-height: normal;
+    background: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #ec6090;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #e75e8d !important;
+    box-shadow: 
+        0 0 0 4px rgba(231, 94, 141, 0.15),
+        0 8px 25px rgba(231, 94, 141, 0.12);
+    transform: translateY(-2px);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    filter: invert(40%) sepia(80%) saturate(3000%) hue-rotate(300deg);
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
 }

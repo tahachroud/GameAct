@@ -11,14 +11,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $user = $userController->getUserByEmail($email);
 
-    if ($user && $user['password'] === $password && $user['role'] === 'admin') {
+    if ($user && password_verify($password, $user['password'])) {
         
-        $_SESSION['admin_id'] = $user['id'];
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['role'] = $user['role'];
 
-        header('Location: ../backoffice/index.php');
+        if ($user['role'] === 'admin') {
+            header('Location: ../backoffice/dashboard.php');
+        } else {
+            header('Location: profile.php');
+        }
         exit;
     } else {
-        $error = 'Invalid credentials or you are not an admin.';
+        $error = "Invalid email or password.";
     }
 }
 ?>

@@ -35,23 +35,7 @@ class User {
         $this->age = $age;
         $this->role = $role;
     }
-    public function show() {
-        echo "<table border='1' cellpadding='5'>";
-        echo "<tr><th>ID</th><th>Name</th><th>Last Name</th><th>Email</th><th>Password</th><th>CIN</th><th>TEL</th><th>Gender</th><th>Role</th></tr>";
-        echo "<tr>";
-        echo "<td>{$this->id}</td>";
-        echo "<td>{$this->name}</td>";
-        echo "<td>{$this->lastname}</td>";
-        echo "<td>{$this->email}</td>";
-        echo "<td>{$this->password}</td>";
-        echo "<td>{$this->cin}</td>";
-        echo "<td>{$this->gender}</td>";
-        echo "<td>{$this->location}</td>";
-        echo "<td>{$this->age}</td>";
-        echo "<td>{$this->role}</td>";
-        echo "</tr>";
-        echo "</table>";
-    }
+
     public function getId(): ?int {
         return $this->id;
     }

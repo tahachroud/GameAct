@@ -1,25 +1,29 @@
-
 <?php
 session_start();
-require_once __DIR__ . '/../../controllers/userController.php';
-
+require_once '../../controllers/userController.php';
 $userController = new userController();
 $error = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
 
     $user = $userController->getUserByEmail($email);
 
-    if ($user && $user['password'] === $password) {
+    if ($user && password_verify($password, $user['password'])) {
+        
+        $_SESSION['user_id']   = $user['id'];
+        $_SESSION['user_name'] = $user['name'] . " " . $user['lastname'];
+        $_SESSION['role']      = $user['role'];
 
-        $_SESSION['user_id'] = $user['id'];
+        if (isset($_POST['remember'])) {
+            setcookie('user_email', $email, time() + (30 * 24 * 3600), "/");
+        }
 
-        header('Location: profile.php');
+        header("Location: profile.php");
         exit;
     } else {
-        $error = 'Incorrect email or password.';
+        $error = "Invalid email or password.";
     }
 }
 ?>
@@ -94,8 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <button type="submit" class="button">Login</button>
 
-                <div class="forgot-password">
-                    <a href="#">Lost your password?</a>
+                <div style="text-align:center; margin: 20px 0;">
+                    <a href="forgot_password.php" style="color:#e75e8d; font-size:15px; text-decoration:none; font-weight:600; transition:0.3s;">
+                        Forgot your password?
+                    </a>
                 </div>
             </form>
         </div>

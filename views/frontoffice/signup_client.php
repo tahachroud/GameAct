@@ -5,77 +5,135 @@ require_once __DIR__ . '/../../controllers/userController.php';
 require_once __DIR__ . '/../../model/User.php';
 
 $userController = new userController();
-$error = '';
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $js_validated = $_POST['js_validated'] ?? '0';
+    $js_ok = ($js_validated === '1');
 
     $name      = $_POST['name']      ?? '';
     $lastname  = $_POST['lastname']  ?? '';
     $email     = $_POST['email']     ?? '';
-    $password  = $_POST['password']  ?? '';
+    $password = $_POST['password'] ?? '';
     $password2 = $_POST['password2'] ?? '';
     $cin       = $_POST['cin']       ?? '';
     $gender    = $_POST['gender']    ?? '';
     $location  = $_POST['location']  ?? '';
-    $age       = $_POST['age']       ?? '';
+    $dob       = $_POST['dob']       ?? '';
     $role      = 'client';
 
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $name     = trim($name);
-    $lastname = trim($lastname);
-    $email    = trim($email);
-    $cin      = trim($cin);
-    $location = trim($location);
-    $age      = trim($age);
+    $name      = trim($name);
+    $lastname  = trim($lastname);
+    $email     = trim($email);
+    $cin       = trim($cin);
+    $location  = trim($location);
+    $dob       = trim($dob);
+    $age = null; 
 
-    $namePattern = '/^[A-Za-zÀ-ÖØ-öø-ÿ\s]+$/u';
+    $fullNamePattern = '/^[A-ZÀ-Ö][a-zà-öø-ÿ]*(\s[A-ZÀ-Ö][a-zà-öø-ÿ]*)*$/u';
+    $emailPattern    = '/^[^\s@]+@[^\s@]+\.[^\s@]+$/';
+    $cinPattern      = '/^\d{8}$/';
+    $agePattern      = '/^\d+$/';
 
-    if ($name === '' || !preg_match($namePattern, $name) || !preg_match('/^[A-ZÀ-Ö]/u', $name)) {
-        $error = 'First name must start with a capital letter and contain only letters.';
-    }
-    elseif ($lastname === '' || !preg_match($namePattern, $lastname) || !preg_match('/^[A-ZÀ-Ö]/u', $lastname)) {
-        $error = 'Last name must start with a capital letter and contain only letters.';
-    }
-    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Email format is invalid.';
-    }
-    elseif (strlen($password) < 8) {
-        $error = 'Password must be at least 8 characters long.';
-    }
-    elseif ($password !== $password2) {
-        $error = 'Passwords do not match.';
-    }
-    elseif (!preg_match('/^\d{8}$/', $cin)) {
-        $error = 'CIN must contain exactly 8 digits.';
-    }
-    elseif (!ctype_digit($age) || (int)$age <= 0) {
-        $error = 'Age must be a positive number.';
-    }
-    elseif ($location === '') {
-        $error = 'Location is required.';
-    }
-    elseif (!in_array($gender, ['male', 'female'], true)) {
-        $error = 'Please select a gender.';
+
+    if ($name === '' || !preg_match($fullNamePattern, $name)) {
+        if (!$js_ok) {
+            $errors['name'] = 'First name must start with a capital letter and contain only letters.';
+        }
     }
 
-    if ($error === '') {
+    if ($lastname === '' || !preg_match($fullNamePattern, $lastname)) {
+        if (!$js_ok) {
+            $errors['lastname'] = 'Last name must start with a capital letter and contain only letters.';
+        }
+    }
+
+    if (!preg_match($emailPattern, $email)) {
+        if (!$js_ok) {
+            $errors['email'] = 'Email format is invalid.';
+        }
+    }
+
+    if (strlen($password) < 8) {
+        if (!$js_ok) {
+            $errors['password'] = 'Password must be at least 8 characters long.';
+        }
+    }
+
+    if ($password !== $password2) {
+        if (!$js_ok) {
+            $errors['password2'] = 'Passwords do not match.';
+        }
+    }
+
+    if (!preg_match($cinPattern, $cin)) {
+        if (!$js_ok) {
+            $errors['cin'] = 'CIN must contain exactly 8 digits.';
+        }
+    }
+
+    if ($dob === '') {
+        if (!$js_ok) {
+            $errors['dob'] = 'Date of birth is required.';
+        }
+    } else {
+        $dobDateTime = DateTime::createFromFormat('Y-m-d', $dob);
+
+        if (!$dobDateTime || $dobDateTime->format('Y-m-d') !== $dob) {
+            if (!$js_ok) {
+                $errors['dob'] = 'Date of birth is invalid.';
+            }
+        } else {
+            $today = new DateTime();
+            if ($dobDateTime >= $today) {
+                if (!$js_ok) {
+                    $errors['dob'] = 'Date of birth must be in the past.';
+                }
+            } else {
+                $ageInterval = $today->diff($dobDateTime);
+                $age = $ageInterval->y;
+
+                if ($age <= 0 || $age > 120) {
+                    if (!$js_ok) {
+                        $errors['dob'] = 'Please enter a valid date of birth.';
+                    }
+                }
+            }
+        }
+    }
+
+    if ($location === '') {
+        if (!$js_ok) {
+            $errors['location'] = 'Location is required.';
+        }
+    }
+
+    if (!in_array($gender, ['male', 'female'], true)) {
+        if (!$js_ok) {
+            $errors['gender'] = 'Please select a gender.';
+        }
+    }
+
+    if (empty($errors)) {
 
         $existingEmail = $userController->getUserByEmail($email);
-
         if ($existingEmail) {
-            $error = 'This email is already in use. Please choose another one.';
+            $errors['email'] = 'This email is already in use. Please choose another one.';
         } else {
             $existingCin = $userController->getUserByCin($cin);
-
             if ($existingCin) {
-                $error = 'This CIN is already in use. Please choose another one.';
+                $errors['cin'] = 'This CIN is already in use. Please choose another one.';
             } else {
+
                 $user = new User(
                     null,
                     $name,
                     $lastname,
                     $email,
-                    $password,
+                    $hashed_password,
                     $cin,
                     $gender,
                     $location,
@@ -92,17 +150,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         header('Location: profile.php');
                         exit;
                     } else {
-                        $error = 'Signup succeeded but user could not be loaded.';
+                        $errors['global'] = 'Signup succeeded but user could not be loaded.';
                     }
 
                 } catch (Exception $e) {
-                    $error = 'Error during signup: ' . $e->getMessage();
+                    $errors['global'] = 'Error during signup: ' . $e->getMessage();
                 }
             }
         }
     }
+
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -148,20 +208,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     Have an account? <a href="login_client.php">Sign in</a>
                 </p>
             </div>
-
-            <?php if (!empty($error)): ?>
-                <p style="color:red;"><?= htmlspecialchars($error) ?></p>
-            <?php endif; ?>
             
-            <p id="errorBox" style="color:red;"></p>
-
             <form method="POST" onsubmit="return saisie();">
+                <input type="hidden" id="js_validated" name="js_validated" value="0">
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name">
                             First name <span class="required">*</span>
                         </label>
-                        <input type='text' id="name" name="name" placeholder="Name" required>
+                        <input type="text" id="name" name="name" placeholder="Name" required>
+                        <p class="error-message"></p>
                     </div>
 
                     <div class="form-group">
@@ -169,6 +226,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             Last name <span class="required">*</span>
                         </label>
                         <input type="text" id="lastname" name="lastname" placeholder="Lastname" required>
+                        <p class="error-message"></p>
                     </div>
                 </div>
 
@@ -177,48 +235,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Email address <span class="required">*</span>
                     </label>
                     <input type="email" id="email" name="email" placeholder="Email" required>
+                    <p class="error-message"></p>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">
-                        Password <span class="required">*</span>
-                    </label>
-                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <label for="password">Password <span class="required">*</span></label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required oninput="saisie()">
+                    
+                    <div class="error-message"></div>
+
+                    <div class="password-strength">
+                        <div class="strength-bar"></div>
+                    </div>
+
+                    <small class="password-hint">Use 9+ characters with letters, numbers & symbols</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">
+                    <label for="password2">
                         Retype Password <span class="required">*</span>
                     </label>
                     <input type="password" id="password2" name="password2" placeholder="Confirm Password" required>
+                    <p class="error-message"></p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cin">
+                            CIN <span class="required">*</span>
+                        </label>
+                        <input type="text" id="cin" name="cin" placeholder="CIN" required>
+                        <p class="error-message"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">
+                            Location <span class="required">*</span>
+                        </label>
+                        <input type="text" id="location" name="location" placeholder="Your Location" required>
+                        <p class="error-message"></p>
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="cin">
-                        CIN <span class="required">*</span>
-                    </label>
-                    <input type='text'id="cin" name="cin" placeholder="CIN" required>
+                    <label for="dob">Date of birth <span class="required">*</span></label>
+                    <input type="date" id="dob" name="dob" required class="dob-input">
+                    <div class="error-message"></div>
                 </div>
 
                 <div class="form-group">
-                    <label for="age">
-                        Age <span class="required">*</span>
+                    <label for="gender">
+                        Gender <span class="required">*</span>
                     </label>
-                    <input type='text'id="age" name="age" placeholder="Your Age" required>
+                    <select name="gender" id="gender" style="width:100%; padding:12px; margin-bottom:10px;">
+                        <option disabled selected>Select gender</option>
+                        <option>male</option>
+                        <option>female</option>
+                    </select>
+                    <p class="error-message"></p>
                 </div>
 
-                <div class="form-group">
-                    <label for="age">
-                        Location <span class="required">*</span>
-                    </label>
-                    <input type='text' id="location" name="location" placeholder="Your Location" required>
-                </div>
-
-                <select name="gender" id="gender" style="width:100%; padding:12px; margin-bottom:20px;">
-                    <option disabled selected>Select gender</option>
-                    <option>male</option>
-                    <option>female</option>
-                </select>
+                <?php if (!empty($errors)): ?>
+                    <div class="server-error-box">
+                        <?php foreach ($errors as $msg): ?>
+                            <div><?= htmlspecialchars($msg) ?></div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
 
                 <button type="submit" class="button">Register</button>
             </form>
@@ -238,6 +320,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
   </footer>
 
-    <script src="java.js"></script>
+    <script src="assets/js/java.js"></script>
 </body>
 </html>
