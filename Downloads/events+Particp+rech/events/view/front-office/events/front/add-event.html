@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GameAct - Créer Événement</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="../../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FontAwesome + TemplateMo -->
+  <link rel="stylesheet" href="../../assets/css/fontawesome.css">
+  <link rel="stylesheet" href="../../assets/css/templatemo-cyborg-gaming.css">
+
+  <!-- Events Design -->
+  <link rel="stylesheet" href="events-custom.css">
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <a href="../../index.html" class="logo">
+              <img src="../../assets/images/logo.png" alt="GameAct" style="height:60px;">
+            </a>
+            <ul class="nav">
+              <li><a href="../../index.html">Accueil</a></li>
+              <li><a href="../../browse.html">Parcourir</a></li>
+              <li><a href="index.php" class="active">Events</a></li>
+              <li><a href="../../streams.html">Tutorials</a></li>
+              <li><a href="../../profile.html">Profil</a></li>
+              <li><a href="../../leaderboard.html">Leaderboard</a></li>
+            </ul>
+            <a class='menu-trigger'><span>Menu</span></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+
+          <!-- Bouton Retour -->
+          <div class="mb-4">
+            <a href="index.php" class="btn-back">
+              <i class="fa fa-arrow-left"></i> Retour
+            </a>
+          </div>
+
+          <!-- Titre -->
+          <div class="text-center mb-5">
+            <h1 style="color:#e94560; font-size:2.5rem;">Créer un événement</h1>
+          </div>
+
+          <!-- Formulaire -->
+          <div class="form-card">
+            <form method="POST" action="../../../ajoutEvent.php" id="formEvent">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="titre">Titre de l'événement *</label>
+                  <input type="text" id="titre" name="titre" placeholder="Ex: Tournoi Valorant Pro">
+                  <span class="error-message" id="error-titre"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="date">Date de l'événement *</label>
+                  <input type="date" id="date" name="date" placeholder="YYYY-MM-DD">
+                  <span class="error-message" id="error-date"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="heure_deb">Heure de début *</label>
+                  <input type="time" id="heure_deb" name="heure_deb" placeholder="HH:MM">
+                  <span class="error-message" id="error-heure_deb"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="heure_fin">Heure de fin *</label>
+                  <input type="time" id="heure_fin" name="heure_fin" placeholder="HH:MM">
+                  <span class="error-message" id="error-heure_fin"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="lieu">Lieu *</label>
+                  <input type="text" id="lieu" name="lieu" placeholder="Ex: Paris Expo">
+                  <span class="error-message" id="error-lieu"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="statut">Statut *</label>
+                  <select id="statut" name="statut">
+                    <option value="">Sélectionner un statut</option>
+                    <option value="à venir">À venir</option>
+                    <option value="en cours">En cours</option>
+                    <option value="terminé">Terminé</option>
+                    <option value="annulé">Annulé</option>
+                  </select>
+                  <span class="error-message" id="error-statut"></span>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2;">
+                  <label for="description">Description *</label>
+                  <textarea id="description" name="description" rows="4" placeholder="Décrivez votre événement..."></textarea>
+                  <span class="error-message" id="error-description"></span>
+                </div>
+
+                <div class="form-actions" style="grid-column: span 2;">
+                  <button type="submit" class="btn-confirm">Créer l'événement</button>
+                  <button type="button" class="btn-cancel" onclick="window.history.back();">Annuler</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-5 py-4" style="background:#0f0f1e; border-top:1px solid #333;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <p style="color:#aaa; font-size:0.9rem; margin:0;">
+            Copyright © 2025 <a href="#" style="color:#e94560; text-decoration:none;">GameAct</a>. Tous droits réservés.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../../vendor/jquery/jquery.min.js"></script>
+  <script src="../../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../assets/js/custom.js"></script>
+  <script src="controle_saisie.js"></script>
+</body>
+</html>
