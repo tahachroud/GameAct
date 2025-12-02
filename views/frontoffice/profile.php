@@ -47,13 +47,13 @@ function e($v) {
                 </form>
             </div>
             <ul class="nav">
-                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="index.html" >Home</a></li>
                 <li><a href="browse.html">Evénements</a></li>
                 <li><a href="details.html">Boutique</a></li>
                 <li><a href="streams.html">Communauté</a></li>
                 <li><a href="streams.html">Tutoriels</a></li>
                 <li><a href="streams.html">Leaderboard</a></li>
-                <li><a href="profile.php">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
+                <li><a href="profile.php" class="active">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
             </ul>
         </nav>
     </header>
