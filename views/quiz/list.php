@@ -187,13 +187,13 @@ include 'views/header.php';
                                 <h4><em>Filter</em> By Category</h4>
                             </div>
                             <div style="text-align: center;">
-                                <a href="index.php?page=quiz_list" class="filter-btn <?php echo !isset($_GET['category']) ? 'active' : ''; ?>">All</a>
-                                <a href="index.php?page=quiz_list&category=retro" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'retro' ? 'active' : ''; ?>">Retro</a>
-                                <a href="index.php?page=quiz_list&category=action" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'action' ? 'active' : ''; ?>">Action</a>
-                                <a href="index.php?page=quiz_list&category=strategy" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'strategy' ? 'active' : ''; ?>">Strategy</a>
-                                <a href="index.php?page=quiz_list&category=rpg" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'rpg' ? 'active' : ''; ?>">RPG</a>
-                                <a href="index.php?page=quiz_list&category=fps" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'fps' ? 'active' : ''; ?>">FPS</a>
-                                <a href="index.php?page=quiz_list&category=moba" class="filter-btn <?php echo ($_GET['category'] ?? '') == 'moba' ? 'active' : ''; ?>">MOBA</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory(null)" class="filter-btn active" data-category="all">All</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('retro')" class="filter-btn" data-category="retro">Retro</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('action')" class="filter-btn" data-category="action">Action</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('strategy')" class="filter-btn" data-category="strategy">Strategy</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('rpg')" class="filter-btn" data-category="rpg">RPG</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('fps')" class="filter-btn" data-category="fps">FPS</a>
+                                <a href="javascript:void(0)" onclick="filterByCategory('moba')" class="filter-btn" data-category="moba">MOBA</a>
                             </div>
                         </div>
                     </div>
@@ -206,7 +206,7 @@ include 'views/header.php';
                             <div class="heading-section">
                                 <h4><em>Available</em> Quiz</h4>
                             </div>
-                            <div class="row">
+                            <div class="row" id="quiz-list-container">
                                 <?php if(empty($quizzes)): ?>
                                     <div class="col-12">
                                         <p style="text-align: center; color: #666; padding: 50px;">No quiz found.</p>
@@ -229,6 +229,16 @@ include 'views/header.php';
                                                         <div class="quiz-detail-item">
                                                             <span>Questions:</span>
                                                             <span><?php echo $quiz['nombre_questions']; ?></span>
+                                                        </div>
+                                                        <div class="quiz-detail-item">
+                                                            <span>Duration:</span>
+                                                            <span>
+                                                                <?php 
+                                                                $durationSeconds = 180 + (max(0, $quiz['nombre_questions'] - 8) * 15);
+                                                                $durationMinutes = ceil($durationSeconds / 60);
+                                                                echo $durationMinutes . ' min';
+                                                                ?>
+                                                            </span>
                                                         </div>
                                                         <div class="quiz-detail-item">
                                                             <span>Difficulty:</span>
@@ -303,6 +313,57 @@ function updateStatistics() {
         })
         .catch(error => {
             console.error('Error updating statistics:', error);
+        });
+}
+
+// Filter quizzes by category using AJAX
+function filterByCategory(category) {
+    // Update active filter button styling
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (category !== null) {
+        const activeBtn = document.querySelector(`[data-category="${category}"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+    }
+    
+    // Prepare the URL
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'get_quizzes_by_category');
+    if (category !== null) {
+        url.searchParams.set('category', category);
+    }
+    
+    // Show loading state
+    const container = document.getElementById('quiz-list-container');
+    if (container) {
+        container.innerHTML = '<div class="text-center"><p>Loading quizzes...</p></div>';
+    }
+    
+    // Fetch filtered quizzes
+    fetch(url.toString())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && container) {
+                container.innerHTML = data.html;
+                console.log('✓ Quizzes filtered: ' + data.count + ' quiz(zes) found');
+            } else if (!data.success) {
+                container.innerHTML = '<div class="alert alert-warning text-center">No quizzes found in this category.</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error filtering quizzes:', error);
+            if (container) {
+                container.innerHTML = '<div class="alert alert-danger text-center">Error loading quizzes. Please try again.</div>';
+            }
         });
 }
 

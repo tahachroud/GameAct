@@ -9,7 +9,9 @@ session_start();
 
 // Error reporting (disable in production)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Disable display_errors for AJAX requests to prevent corrupting JSON responses
+$isAjaxRequest = isset($_GET['page']) && in_array($_GET['page'], ['update_quiz_status']);
+ini_set('display_errors', $isAjaxRequest ? 0 : 1);
 
 // Include database configuration
 require_once __DIR__ . '/config/db.php';
@@ -50,6 +52,10 @@ try {
             $controller->submitQuizResults();
             break;
             
+        case 'get_quizzes_by_category':
+            $controller->getQuizzesByCategory();
+            break;
+            
         case 'get_user_stats':
             $controller->getUserStats();
             break;
@@ -83,6 +89,10 @@ try {
                 header('Location: index.php?page=admin_quiz_manage');
                 exit;
             }
+            break;
+            
+        case 'update_quiz_status':
+            $controller->updateQuizStatus();
             break;
             
         // User Quiz Management Routes

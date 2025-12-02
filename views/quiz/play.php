@@ -406,14 +406,23 @@ include 'views/header.php';
                                 <h2><?php echo htmlspecialchars($quiz['titre']); ?></h2>
                                 <p style="color: #666;"><?php echo htmlspecialchars($quiz['description']); ?></p>
                                 
+                                <?php
+                                // Calculate duration based on number of questions
+                                $questionCount = count($questions);
+                                $durationSeconds = 180 + (max(0, $questionCount - 8) * 15);
+                                $durationMinutes = ceil($durationSeconds / 60);
+                                $displayMinutes = floor($durationSeconds / 60);
+                                $displaySeconds = $durationSeconds % 60;
+                                ?>
+                                
                                 <div class="timer-container" id="timer-container">
                                     <div class="timer-label">Time Remaining</div>
-                                    <div class="timer-display" id="timer-display">3:00</div>
+                                    <div class="timer-display" id="timer-display"><?php echo $displayMinutes . ':' . str_pad($displaySeconds, 2, '0', STR_PAD_LEFT); ?></div>
                                 </div>
                                 
                                 <div class="quiz-progress">
                                     <span class="progress-info">
-                                        Question <span id="current-question">1</span> of <span id="total-questions"><?php echo count($questions); ?></span>
+                                        Question <span id="current-question">1</span> of <span id="total-questions"><?php echo count($questions); ?></span> | Duration: <?php echo $durationMinutes; ?> min
                                     </span>
                                 </div>
                                 <div class="progress-bar-container">
@@ -448,13 +457,22 @@ const quizData = ' . $questionsJSON . ';
 const quizId = ' . $quiz['id_quiz'] . ';
 const totalQuestions = quizData.length;
 
+// Calculate duration based on number of questions
+// Formula: 3 min for 8 questions, scaling up by 15 seconds per additional question
+function calculateQuizDuration(questionCount) {
+    const seconds = 180 + (Math.max(0, questionCount - 8) * 15);
+    return seconds;
+}
+
+const quizDurationSeconds = calculateQuizDuration(totalQuestions);
+
 let currentQuestionIndex = 0;
 let score = 0;
 let correctAnswers = 0;
 let userAnswers = {};
 let startTime = Date.now();
 
-let timeRemaining = 180;
+let timeRemaining = quizDurationSeconds;
 let timerInterval = null;
 let quizFailed = false;
 let fiftyFiftyUsed = false;

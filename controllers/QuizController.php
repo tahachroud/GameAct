@@ -41,6 +41,79 @@ class QuizController {
     }
 
     /**
+     * Get quizzes by category via AJAX
+     */
+    public function getQuizzesByCategory() {
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        
+        header('Content-Type: application/json; charset=utf-8');
+        
+        try {
+            $category = isset($_GET['category']) ? htmlspecialchars(strip_tags($_GET['category'])) : null;
+            
+            error_log("Getting quizzes for category: " . ($category ?? 'all'));
+            
+            // Get quizzes filtered by category
+            $quizzes = $this->quizModel->readAll($category);
+            
+            if (empty($quizzes)) {
+                echo json_encode([
+                    'success' => true,
+                    'html' => '<div class="col-12"><p style="text-align: center; color: #666; padding: 50px;">No quiz found in this category.</p></div>',
+                    'count' => 0
+                ]);
+                exit;
+            }
+            
+            // Build HTML for quiz cards
+            $html = '';
+            foreach ($quizzes as $quiz) {
+                $html .= '
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="quiz-card" onclick="window.location.href=\'index.php?page=quiz_play&id=' . $quiz['id_quiz'] . '\'">
+                            <img src="assets/images/' . htmlspecialchars($quiz['image_url']) . '" 
+                                 alt="' . htmlspecialchars($quiz['titre']) . '" 
+                                 onerror="this.src=\'assets/images/popular-01.jpg\'">
+                            <div class="quiz-info">
+                                <span class="quiz-category">' . strtoupper(htmlspecialchars($quiz['categorie'])) . '</span>
+                                <h4>' . htmlspecialchars($quiz['titre']) . '</h4>
+                                <p class="quiz-creator">
+                                    <i class="fa fa-user"></i> Created by: ' . htmlspecialchars($quiz['createur'] ?? 'Anonymous') . '
+                                </p>
+                                <div class="quiz-details">
+                                    <div class="quiz-detail-item">
+                                        <span>Questions:</span>
+                                        <span class="number">' . $quiz['nombre_questions'] . '</span>
+                                    </div>
+                                    <div class="quiz-detail-item">
+                                        <span>Plays:</span>
+                                        <span class="number">' . $quiz['nombre_completions'] . '</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                ';
+            }
+            
+            echo json_encode([
+                'success' => true,
+                'html' => $html,
+                'count' => count($quizzes)
+            ]);
+            
+        } catch (Exception $e) {
+            error_log("Error getting quizzes by category: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        
+        exit;
+    }
+
+    /**
      * Créer un quiz (Front Office)
      */
     public function createQuiz() {
@@ -200,7 +273,7 @@ class QuizController {
      * Dashboard Admin
      */
     public function adminDashboard() {
-        $allQuizzes = $this->quizModel->readAll();
+        $allQuizzes = $this->quizModel->readAll(null, true);
         
         $totalQuiz = count($allQuizzes);
         $totalQuestions = 0;
@@ -230,7 +303,7 @@ class QuizController {
      * Gérer les quiz (Admin)
      */
     public function adminManageQuiz() {
-        $quizzes = $this->quizModel->readAll();
+        $quizzes = $this->quizModel->readAll(null, true);
         require __DIR__ . '/../views/admin/quiz_manage.php';
     }
 
@@ -258,27 +331,55 @@ class QuizController {
     public function adminUpdateQuiz() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_quiz = $_POST['quiz-id'];
+            error_log("=== ADMIN UPDATE QUIZ START ===");
+            error_log("Quiz ID: $id_quiz");
             
             $this->quizModel->id_quiz = $id_quiz;
-            $this->quizModel->titre = $_POST['quiz-title'];
-            $this->quizModel->description = $_POST['quiz-description'];
-            $this->quizModel->categorie = $_POST['quiz-category'];
-            $this->quizModel->difficulte = $_POST['quiz-difficulty'];
-            $this->quizModel->statut = $_POST['quiz-status'];
+            $this->quizModel->titre = $_POST['quiz-title'] ?? '';
+            $this->quizModel->description = $_POST['quiz-description'] ?? '';
+            $this->quizModel->categorie = $_POST['quiz-category'] ?? '';
+            $this->quizModel->difficulte = $_POST['quiz-difficulty'] ?? 'medium';
+            $this->quizModel->statut = $_POST['quiz-status'] ?? 'active';
+            
+            error_log("Titre: " . $this->quizModel->titre);
+            error_log("Description: " . $this->quizModel->description);
+            error_log("Categorie: " . $this->quizModel->categorie);
+            error_log("Difficulte: " . $this->quizModel->difficulte);
+            error_log("Statut: " . $this->quizModel->statut);
             
             // Get existing quiz data for image
             $existingQuiz = $this->quizModel->readOne();
             
+            if (!$existingQuiz) {
+                error_log("ERROR: Quiz not found with ID: $id_quiz");
+                header('Location: index.php?page=admin_quiz_manage&error=quiz_not_found');
+                exit;
+            }
+            
             // Handle image upload if provided
+            error_log("FILES array: " . json_encode($_FILES));
+            if (isset($_FILES['quiz-image'])) {
+                error_log("quiz-image file info: " . json_encode($_FILES['quiz-image']));
+            }
+            
             if (isset($_FILES['quiz-image']) && $_FILES['quiz-image']['error'] === UPLOAD_ERR_OK) {
+                error_log("File upload successful, processing image...");
                 $uploadedImage = $this->handleImageUpload($_FILES['quiz-image']);
                 if ($uploadedImage) {
                     $this->quizModel->image_url = $uploadedImage;
+                    error_log("Image uploaded successfully: $uploadedImage");
                 } else {
                     $this->quizModel->image_url = $existingQuiz['image_url'];
+                    error_log("Image upload failed, using existing: " . $existingQuiz['image_url']);
                 }
             } else {
+                if (isset($_FILES['quiz-image'])) {
+                    error_log("File upload error code: " . $_FILES['quiz-image']['error']);
+                } else {
+                    error_log("No file uploaded in quiz-image field");
+                }
                 $this->quizModel->image_url = $existingQuiz['image_url'];
+                error_log("No image uploaded, using existing: " . $existingQuiz['image_url']);
             }
             
             // Handle questions
@@ -292,8 +393,11 @@ class QuizController {
                 }
             }
             
+            error_log("Question count: $questionCount");
+            
             // Validate question count
             if ($questionCount < 8 || $questionCount > 12) {
+                error_log("ERROR: Invalid question count: $questionCount");
                 header('Location: index.php?page=admin_quiz_edit&id=' . $id_quiz . '&error=question_count');
                 exit;
             }
@@ -323,16 +427,27 @@ class QuizController {
             // Update quiz nombre_questions
             $this->quizModel->nombre_questions = $questionCount;
             
+            error_log("About to update quiz with ID: $id_quiz, Titre: " . $this->quizModel->titre);
+            
             try {
                 // Update quiz
-                if (!$this->quizModel->update()) {
+                $updateResult = $this->quizModel->update();
+                error_log("Update result: " . ($updateResult ? 'SUCCESS' : 'FAILED'));
+                
+                if (!$updateResult) {
+                    error_log("ERROR: Failed to update quiz");
                     header('Location: index.php?page=admin_quiz_edit&id=' . $id_quiz . '&error=update_failed');
                     exit;
                 }
                 
+                error_log("Quiz updated successfully. Now processing questions...");
+                
                 // Get current questions for this quiz
                 $currentQuestions = $this->quizQuestionModel->getQuestionsByQuiz($id_quiz);
                 $currentQuestionIds = array_column($currentQuestions, 'id_question');
+                
+                error_log("Current question IDs: " . json_encode($currentQuestionIds));
+                error_log("New question IDs: " . json_encode($existingQuestionIds));
                 
                 // Delete questions that were removed
                 foreach ($currentQuestionIds as $currentId) {
@@ -343,12 +458,14 @@ class QuizController {
                             // Only used in this quiz, safe to delete
                             $this->questionModel->id_question = $currentId;
                             $this->questionModel->delete();
+                            error_log("Deleted question: $currentId");
                         }
                     }
                 }
                 
                 // Remove all question associations for this quiz
                 $this->quizQuestionModel->removeAllQuestions($id_quiz);
+                error_log("Removed all question associations");
                 
                 // Update or create questions
                 $newQuestionIds = [];
@@ -367,6 +484,7 @@ class QuizController {
                         $this->questionModel->update();
                         
                         $newQuestionIds[] = $questionData['id_question'];
+                        error_log("Updated question: " . $questionData['id_question']);
                     } else {
                         // Create new question
                         $this->questionModel->texte_question = $questionData['texte_question'];
@@ -381,18 +499,23 @@ class QuizController {
                         $question_id = $this->questionModel->create();
                         if ($question_id) {
                             $newQuestionIds[] = $question_id;
+                            error_log("Created new question: $question_id");
                         }
                     }
                 }
                 
                 // Re-associate questions with quiz
                 $this->quizQuestionModel->associateQuestions($id_quiz, $newQuestionIds);
+                error_log("Associated " . count($newQuestionIds) . " questions with quiz");
+                error_log("=== ADMIN UPDATE QUIZ END - SUCCESS ===");
                 
                 header('Location: index.php?page=admin_quiz_manage&updated=1');
                 exit;
                 
             } catch (Exception $e) {
+                error_log("=== ADMIN UPDATE QUIZ END - ERROR ===");
                 error_log("Error updating quiz: " . $e->getMessage());
+                error_log("Stack trace: " . $e->getTraceAsString());
                 header('Location: index.php?page=admin_quiz_edit&id=' . $id_quiz . '&error=exception');
                 exit;
             }
@@ -407,6 +530,83 @@ class QuizController {
         $this->quizModel->delete();
         
         header('Location: index.php?page=admin_quiz_manage&deleted=1');
+        exit;
+    }
+
+    /**
+     * Update quiz status via AJAX (Admin)
+     */
+    public function updateQuizStatus() {
+        // Clear any output buffers
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        
+        // Set JSON header
+        header('Content-Type: application/json; charset=utf-8');
+        
+        // Check if it's a POST request
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            exit;
+        }
+        
+        try {
+            // Get quiz ID and new status
+            $quizId = isset($_POST['id_quiz']) ? intval($_POST['id_quiz']) : null;
+            $newStatus = isset($_POST['status']) ? htmlspecialchars(strip_tags($_POST['status'])) : null;
+            
+            error_log("Update Status Called - ID: $quizId, Status: $newStatus");
+            
+            // Validate inputs
+            if (!$quizId || !$newStatus) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Missing required parameters']);
+                exit;
+            }
+            
+            // Validate status value
+            if (!in_array($newStatus, ['active', 'pending', 'deleted'])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Invalid status value']);
+                exit;
+            }
+            
+            // Get quiz and update status
+            $this->quizModel->id_quiz = $quizId;
+            $quiz = $this->quizModel->readOne();
+            
+            if (!$quiz) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Quiz not found']);
+                exit;
+            }
+            
+            error_log("Quiz found: " . json_encode($quiz));
+            
+            // Update quiz properties
+            $this->quizModel->titre = $quiz['titre'];
+            $this->quizModel->description = $quiz['description'];
+            $this->quizModel->categorie = $quiz['categorie'];
+            $this->quizModel->image_url = $quiz['image_url'];
+            $this->quizModel->difficulte = $quiz['difficulte'];
+            $this->quizModel->statut = $newStatus;
+            
+            // Execute update
+            if ($this->quizModel->update()) {
+                http_response_code(200);
+                echo json_encode(['success' => true, 'message' => 'Status updated successfully']);
+            } else {
+                http_response_code(500);
+                echo json_encode(['success' => false, 'message' => 'Failed to update status']);
+            }
+        } catch (Exception $e) {
+            error_log("Update Status Error: " . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+        
         exit;
     }
 
@@ -639,13 +839,20 @@ class QuizController {
         $allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
         $maxSize = 5 * 1024 * 1024; // 5MB
         
+        error_log("=== IMAGE UPLOAD START ===");
+        error_log("File name: " . $file['name']);
+        error_log("File type: " . $file['type']);
+        error_log("File size: " . $file['size']);
+        
         // Check file type
         if (!in_array($file['type'], $allowedTypes)) {
+            error_log("ERROR: File type not allowed: " . $file['type']);
             return false;
         }
         
         // Check file size
         if ($file['size'] > $maxSize) {
+            error_log("ERROR: File size exceeds max: " . $file['size']);
             return false;
         }
         
@@ -653,21 +860,34 @@ class QuizController {
         $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         $filename = 'quiz_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
         
-        // Upload directory
-        $uploadDir = __DIR__ . '/../../assets/images/quiz/';
+        // Upload directory - corrected path
+        $uploadDir = __DIR__ . '/../assets/images/quiz/';
+        error_log("Upload directory: " . $uploadDir);
         
         // Create directory if it doesn't exist
         if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0777, true);
+            error_log("Directory doesn't exist, creating...");
+            if (!mkdir($uploadDir, 0777, true)) {
+                error_log("ERROR: Failed to create directory");
+                return false;
+            }
+            error_log("Directory created successfully");
+        } else {
+            error_log("Directory already exists");
         }
         
         $uploadPath = $uploadDir . $filename;
+        error_log("Upload path: " . $uploadPath);
         
         // Move uploaded file
         if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+            error_log("File moved successfully");
+            error_log("=== IMAGE UPLOAD END - SUCCESS ===");
             return 'quiz/' . $filename;
         }
         
+        error_log("ERROR: Failed to move uploaded file");
+        error_log("=== IMAGE UPLOAD END - FAILED ===");
         return false;
     }
 

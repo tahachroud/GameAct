@@ -23,10 +23,34 @@ class Quiz {
     public $statut;
     public $date_creation;
     public $date_modification;
+    public $duree_minutes; // Duration in minutes
 
     public function __construct() {
         $database = new Database();
         $this->conn = $database->getConnection();
+    }
+
+    /**
+     * Calculate quiz duration based on question count
+     * Formula: 3 min for 8 questions, scaling up to 5 min for 12 questions
+     */
+    public function calculateDuration() {
+        if ($this->nombre_questions <= 0) {
+            return 3; // Minimum 3 minutes
+        }
+        
+        // Formula: duration = 3 + (questions - 8) * 0.25
+        // 8 questions = 3 min, 9 = 3.25, 10 = 3.5, 11 = 3.75, 12 = 4 min
+        // Actually, let's use: 180 seconds + (questions - 8) * 15 seconds
+        $seconds = 180 + (max(0, $this->nombre_questions - 8) * 15);
+        return ceil($seconds / 60); // Convert to minutes and round up
+    }
+
+    /**
+     * Get duration in seconds
+     */
+    public function getDurationInSeconds() {
+        return $this->calculateDuration() * 60;
     }
 
     /**
@@ -46,22 +70,22 @@ class Quiz {
 
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize
-        $this->titre = htmlspecialchars(strip_tags($this->titre));
-        $this->description = htmlspecialchars(strip_tags($this->description));
-        $this->categorie = htmlspecialchars(strip_tags($this->categorie));
-        $this->image_url = htmlspecialchars(strip_tags($this->image_url));
-        $this->statut = htmlspecialchars(strip_tags($this->statut));
+        // Sanitize (strip tags only, no htmlspecialchars for storage)
+        $titre = strip_tags($this->titre);
+        $description = strip_tags($this->description);
+        $categorie = strip_tags($this->categorie);
+        $image_url = strip_tags($this->image_url);
+        $statut = strip_tags($this->statut);
 
         // Bind values
-        $stmt->bindParam(":titre", $this->titre);
-        $stmt->bindParam(":description", $this->description);
-        $stmt->bindParam(":categorie", $this->categorie);
-        $stmt->bindParam(":image_url", $this->image_url);
+        $stmt->bindParam(":titre", $titre);
+        $stmt->bindParam(":description", $description);
+        $stmt->bindParam(":categorie", $categorie);
+        $stmt->bindParam(":image_url", $image_url);
         $stmt->bindParam(":id_createur", $this->id_createur);
         $stmt->bindParam(":difficulte", $this->difficulte);
         $stmt->bindParam(":nombre_questions", $this->nombre_questions);
-        $stmt->bindParam(":statut", $this->statut);
+        $stmt->bindParam(":statut", $statut);
 
         if($stmt->execute()) {
             return $this->conn->lastInsertId();
@@ -73,13 +97,17 @@ class Quiz {
     /**
      * Read all quizzes
      */
-    public function readAll($categoryFilter = null) {
+    public function readAll($categoryFilter = null, $includeInactive = false) {
         $query = "SELECT 
                     q.*,
                     u.username as createur
                   FROM " . $this->table_name . " q
                   LEFT JOIN users u ON q.id_createur = u.id_user
-                  WHERE q.statut = 'active'";
+                  WHERE 1=1";
+
+        if (!$includeInactive) {
+            $query .= " AND q.statut = 'active'";
+        }
 
         if ($categoryFilter && $categoryFilter !== 'all') {
             $query .= " AND q.categorie = :categorie";
@@ -143,25 +171,27 @@ class Quiz {
                     categorie = :categorie,
                     image_url = :image_url,
                     difficulte = :difficulte,
-                    statut = :statut
+                    statut = :statut,
+                    nombre_questions = :nombre_questions
                 WHERE id_quiz = :id_quiz";
 
         $stmt = $this->conn->prepare($query);
 
-        // Sanitize
-        $this->titre = htmlspecialchars(strip_tags($this->titre));
-        $this->description = htmlspecialchars(strip_tags($this->description));
-        $this->categorie = htmlspecialchars(strip_tags($this->categorie));
-        $this->image_url = htmlspecialchars(strip_tags($this->image_url));
-        $this->statut = htmlspecialchars(strip_tags($this->statut));
+        // Sanitize (strip tags only, no htmlspecialchars for storage)
+        $titre = strip_tags($this->titre);
+        $description = strip_tags($this->description);
+        $categorie = strip_tags($this->categorie);
+        $image_url = strip_tags($this->image_url);
+        $statut = strip_tags($this->statut);
 
         // Bind
-        $stmt->bindParam(':titre', $this->titre);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':categorie', $this->categorie);
-        $stmt->bindParam(':image_url', $this->image_url);
+        $stmt->bindParam(':titre', $titre);
+        $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':categorie', $categorie);
+        $stmt->bindParam(':image_url', $image_url);
         $stmt->bindParam(':difficulte', $this->difficulte);
-        $stmt->bindParam(':statut', $this->statut);
+        $stmt->bindParam(':statut', $statut);
+        $stmt->bindParam(':nombre_questions', $this->nombre_questions);
         $stmt->bindParam(':id_quiz', $this->id_quiz);
 
         return $stmt->execute();

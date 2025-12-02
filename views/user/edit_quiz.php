@@ -1,7 +1,5 @@
 <?php
-/**
- * User Edit Quiz Page with Question Editing
- */
+
 include 'views/header.php';
 ?>
 

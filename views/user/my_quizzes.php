@@ -58,6 +58,7 @@ include 'views/header.php';
                                         <th>Category</th>
                                         <th>Difficulty</th>
                                         <th>Questions</th>
+                                        <th>Duration</th>
                                         <th>Completions</th>
                                         <th>Status</th>
                                         <th>Created</th>
@@ -94,6 +95,13 @@ include 'views/header.php';
                                                 </span>
                                             </td>
                                             <td><?php echo $quiz['nombre_questions']; ?></td>
+                                            <td>
+                                                <?php 
+                                                $durationSeconds = 180 + (max(0, $quiz['nombre_questions'] - 8) * 15);
+                                                $durationMinutes = ceil($durationSeconds / 60);
+                                                echo $durationMinutes . ' min';
+                                                ?>
+                                            </td>
                                             <td><?php echo $quiz['nombre_completions']; ?></td>
                                             <td>
                                                 <?php
