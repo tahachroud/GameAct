@@ -1,7 +1,4 @@
 <?php
-/**
- * User My Quizzes Management Page
- */
 include 'views/header.php';
 ?>
 
@@ -10,7 +7,6 @@ include 'views/header.php';
         <div class="col-lg-12">
             <div class="page-content">
                 
-                <!-- Page Header -->
                 <div class="row" style="margin-bottom: 30px;">
                     <div class="col-lg-12">
                         <div class="heading-section">
@@ -19,7 +15,6 @@ include 'views/header.php';
                     </div>
                 </div>
 
-                <!-- Success/Error Messages -->
                 <?php if (isset($_GET['updated'])): ?>
                     <div class="alert alert-success">
                         ✓ Quiz updated successfully!
@@ -38,7 +33,6 @@ include 'views/header.php';
                     </div>
                 <?php endif; ?>
 
-                <!-- Quizzes Table -->
                 <div class="gaming-library">
                     <div class="col-lg-12">
                         <div class="heading-section">
@@ -56,7 +50,7 @@ include 'views/header.php';
                             </div>
                         <?php else: ?>
                             
-                            <table class="table table-dark table-striped" style="margin-top: 20px;">
+                            <table class="table table-dark table-striped" id="myQuizzesTable" style="margin-top: 20px;">
                                 <thead>
                                     <tr>
                                         <th>Image</th>
@@ -106,6 +100,7 @@ include 'views/header.php';
                                                 $statusColors = [
                                                     'active' => 'success',
                                                     'pending' => 'warning',
+                                                    'inactive' => 'warning',
                                                     'deleted' => 'danger'
                                                 ];
                                                 $statusColor = $statusColors[$quiz['statut']] ?? 'secondary';
@@ -119,14 +114,14 @@ include 'views/header.php';
                                                 <a href="index.php?page=user_edit_quiz&id=<?php echo $quiz['id_quiz']; ?>" 
                                                    class="btn btn-sm btn-warning" 
                                                    title="Edit Quiz">
-                                                    <i class="fa fa-edit"></i> Edit
+                                                    <i class="fa fa-edit"></i>
                                                 </a>
                                                 
                                                 <a href="index.php?page=user_delete_quiz&id=<?php echo $quiz['id_quiz']; ?>" 
                                                    class="btn btn-sm btn-danger" 
                                                    onclick="return confirm('Are you sure you want to delete this quiz?');"
                                                    title="Delete Quiz">
-                                                    <i class="fa fa-trash"></i> Delete
+                                                    <i class="fa fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -170,8 +165,8 @@ include 'views/header.php';
 }
 
 .table th {
-    background: #e75e8d;
-    color: white;
+    background: #e75e8d !important;
+    color: white !important;
     font-weight: 600;
     padding: 15px;
     border: none;
@@ -227,7 +222,147 @@ include 'views/header.php';
     background: #c82333;
     transform: scale(1.05);
 }
+
+.dataTables_wrapper {
+    padding: 20px;
+    background: linear-gradient(145deg, #27292a, #1f2122);
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate {
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_length select,
+.dataTables_wrapper .dataTables_filter input {
+    background: #1f2122;
+    border: 2px solid #e75e8d;
+    color: #fff;
+    padding: 8px 15px;
+    border-radius: 10px;
+    margin: 0 10px;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus {
+    outline: none;
+    border-color: #e84057;
+    box-shadow: 0 0 10px rgba(232, 64, 87, 0.3);
+}
+
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_filter label {
+    color: #fff;
+    font-weight: 500;
+    margin-right: 10px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    background: linear-gradient(145deg, #27292a, #1f2122) !important;
+    border: 2px solid #e75e8d !important;
+    color: #fff !important;
+    padding: 8px 15px !important;
+    margin: 0 5px !important;
+    border-radius: 10px !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: linear-gradient(145deg, #e75e8d, #d64077) !important;
+    border-color: #c4356a !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: linear-gradient(145deg, #e75e8d, #d64077) !important;
+    border-color: #c4356a !important;
+    color: #fff !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    cursor: pointer;
+    position: relative;
+}
+
+table.dataTable thead .sorting:after,
+table.dataTable thead .sorting_asc:after,
+table.dataTable thead .sorting_desc:after {
+    position: absolute;
+    right: 10px;
+    color: #fff;
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+}
+
+table.dataTable thead .sorting:after {
+    content: "\f0dc";
+    opacity: 0.5;
+}
+
+table.dataTable thead .sorting_asc:after {
+    content: "\f0de";
+}
+
+table.dataTable thead .sorting_desc:after {
+    content: "\f0dd";
+}
+
+.dataTables_wrapper .dataTables_info {
+    padding-top: 15px;
+    color: #aaa !important;
+}
 </style>
+
+<script>
+$(document).ready(function() {
+    if (!$.fn.DataTable) {
+        console.error('DataTables library not loaded!');
+        return;
+    }
+    
+    var table = $('#myQuizzesTable').DataTable({
+        responsive: true,
+        order: [[7, 'desc']],
+        pageLength: 10,
+        lengthMenu: [[5, 10, 25, 50, 100], [5, 10, 25, 50, 100]],
+        language: {
+            search: "Search:",
+            searchPlaceholder: "Search your quizzes...",
+            lengthMenu: "Show _MENU_ quizzes",
+            info: "Showing _START_ to _END_ of _TOTAL_ quizzes",
+            infoEmpty: "No quizzes found",
+            infoFiltered: "(filtered from _MAX_ total)",
+            zeroRecords: "No matching quizzes found",
+            emptyTable: "You haven't created any quizzes yet",
+            paginate: {
+                first: "First",
+                last: "Last",
+                next: "Next »",
+                previous: "« Previous"
+            }
+        },
+        columnDefs: [
+            { orderable: false, targets: [0, 8] },
+            { className: "text-center", targets: [4, 5] }
+        ],
+        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>rtip',
+        initComplete: function() {
+            console.log('DataTables initialized successfully!');
+        }
+    });
+    
+    $('#myQuizzesTable_filter input').attr('placeholder', 'Search quizzes...');
+});
+</script>
 
 <?php
 include 'views/footer.php';
