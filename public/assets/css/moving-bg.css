@@ -1,0 +1,48 @@
+/* FULL-PAGE SMOOTH & SLOW NEON PURPLE BACKGROUND */
+
+.moving-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -9999; /* MUST BE VERY LOW */
+  pointer-events: none; /* don't block interactions */
+
+  /* Neon purple + deep dark gradient */
+  background: linear-gradient(
+      120deg,
+      #0a0014,
+      #1a0033,
+      #3d007e,
+      #7a00ff,
+      #b300ff,
+      #7a00ff,
+      #3d007e,
+      #1a0033
+  );
+
+  background-size: 600% 600%;
+
+  /* Smooth & slow animation */
+  animation: bgMove 8s ease-in-out infinite;
+}
+
+@keyframes bgMove {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Keep body transparent */
+body {
+  background: transparent !important;
+}
+
+/* FORCE REMOVE ADMIN BACKGROUNDS */
+body,
+.app-wrapper,
+.app-main,
+.app-content {
+    background: transparent !important;
+}
