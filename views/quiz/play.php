@@ -61,6 +61,7 @@ $customCSS = '
     padding: 30px;
     margin: 30px 0;
     display: none;
+    position: relative;
 }
 
 .question-card.active {
@@ -85,6 +86,48 @@ $customCSS = '
     font-weight: 600;
     margin-bottom: 30px;
     line-height: 1.6;
+}
+
+.voice-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.voice-btn {
+    background: linear-gradient(145deg, #27292a, #1f2122);
+    border: 2px solid #e75e8d;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.voice-btn:hover {
+    background: linear-gradient(145deg, #e75e8d, #d64077);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(231, 94, 141, 0.4);
+}
+
+.voice-btn.speaking {
+    background: linear-gradient(145deg, #e75e8d, #d64077);
+    animation: pulse-voice 1s infinite;
+}
+
+@keyframes pulse-voice {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.voice-btn i {
+    font-size: 16px;
 }
 
 .answer-option {
@@ -457,8 +500,11 @@ const quizData = ' . $questionsJSON . ';
 const quizId = ' . $quiz['id_quiz'] . ';
 const totalQuestions = quizData.length;
 
+// Web Speech API
+let speechSynthesis = window.speechSynthesis;
+let currentSpeech = null;
+
 // Calculate duration based on number of questions
-// Formula: 3 min for 8 questions, scaling up by 15 seconds per additional question
 function calculateQuizDuration(questionCount) {
     const seconds = 180 + (Math.max(0, questionCount - 8) * 15);
     return seconds;
@@ -513,6 +559,7 @@ function startTimer() {
 }
 
 function timeUp() {
+    stopSpeech();
     document.getElementById("quiz-content").style.display = "none";
     const resultHTML = `
         <div style="text-align: center; padding: 40px;">
@@ -537,10 +584,64 @@ function timeUp() {
     document.getElementById("result-container").classList.add("show");
 }
 
+// Voice Reading Functions
+function stopSpeech() {
+    if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+    }
+    // Remove speaking class from all buttons
+    document.querySelectorAll(".voice-btn").forEach(btn => {
+        btn.classList.remove("speaking");
+    });
+}
+
+function speakText(text, button) {
+    // Stop any current speech
+    stopSpeech();
+    
+    // Create speech
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    
+    // Add speaking class
+    button.classList.add("speaking");
+    
+    // Remove speaking class when done
+    utterance.onend = function() {
+        button.classList.remove("speaking");
+    };
+    
+    utterance.onerror = function() {
+        button.classList.remove("speaking");
+    };
+    
+    speechSynthesis.speak(utterance);
+}
+
+function readQuestion() {
+    const question = quizData[currentQuestionIndex];
+    const button = document.getElementById("btn-read-question");
+    speakText(question.texte_question, button);
+}
+
+function readAnswers() {
+    const question = quizData[currentQuestionIndex];
+    const button = document.getElementById("btn-read-answers");
+    
+    const answersText = "Option A: " + question.option_a + ". Option B: " + question.option_b + ". Option C: " + question.option_c + ". Option D: " + question.option_d;
+    
+    speakText(answersText, button);
+}
+
 function displayQuestion() {
     if (currentQuestionIndex === 0) {
         startTimer();
     }
+    
+    // Stop any speech when changing question
+    stopSpeech();
     
     const question = quizData[currentQuestionIndex];
     const container = document.getElementById("question-container");
@@ -551,6 +652,15 @@ function displayQuestion() {
     
     const questionHTML = `
         <div class="question-card active">
+            <div class="voice-controls">
+                <button class="voice-btn" id="btn-read-question" onclick="readQuestion()">
+                    <i class="fa fa-volume-up"></i> Read Question
+                </button>
+                <button class="voice-btn" id="btn-read-answers" onclick="readAnswers()">
+                    <i class="fa fa-volume-up"></i> Read Answers
+                </button>
+            </div>
+            
             <div class="question-text">
                 <strong>Question ` + (currentQuestionIndex + 1) + `:</strong><br>
                 ` + escapeHtml(question.texte_question) + `
@@ -609,6 +719,9 @@ function displayQuestion() {
 }
 
 function selectAnswer(answer) {
+    // Stop speech when user selects answer
+    stopSpeech();
+    
     const question = quizData[currentQuestionIndex];
     const correct = question.reponse_correcte.toUpperCase();
     
@@ -709,6 +822,8 @@ document.getElementById("btn-next").addEventListener("click", function() {
 });
 
 function submitQuiz() {
+    // Stop any speech
+    stopSpeech();
     clearInterval(timerInterval);
     
     const endTime = Date.now();
@@ -729,6 +844,33 @@ function submitQuiz() {
     
     document.getElementById("quiz-content").style.display = "none";
     
+    // Build certificate buttons HTML if score >= 50%
+    let certificateHTML = "";
+    if (percentage >= 50) {
+        const certParams = "quiz_id=" + quizId + "&percentage=" + percentage + "&correct=" + correctAnswers + "&total=" + totalQuestions + "&time=" + timeTaken;
+        certificateHTML = `
+            <div style="margin: 30px 0; padding: 25px; background: linear-gradient(145deg, #27292a, #1f2122); border: 2px solid #e75e8d; border-radius: 15px;">
+                <h3 style="color: #e75e8d; margin-bottom: 15px; font-size: 20px;">
+                    <i class="fa fa-certificate"></i> Certificate Available!
+                </h3>
+                <p style="color: #aaa; margin-bottom: 20px; font-size: 14px;">
+                    Congratulations! You have earned a certificate for completing this quiz.
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <a href="index.php?page=generate_certificate&action=view&` + certParams + `" 
+                       target="_blank"
+                       style="padding: 12px 30px; background: linear-gradient(145deg, #e75e8d, #d64077); border: none; color: white; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa fa-eye"></i> View Certificate
+                    </a>
+                    <a href="index.php?page=generate_certificate&action=download&` + certParams + `" 
+                       style="padding: 12px 30px; background: linear-gradient(145deg, #27292a, #1f2122); border: 2px solid #e75e8d; color: white; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa fa-download"></i> Download Certificate
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+    
     const resultHTML = `
         <div style="font-size: 80px; margin-bottom: 20px;">🎮</div>
         <div class="result-score">` + percentage + `%</div>
@@ -748,6 +890,8 @@ function submitQuiz() {
                 <p>` + score + ` / ` + maxScore + `</p>
             </div>
         </div>
+        
+        ` + certificateHTML + `
         
         <div class="result-actions">
             <a href="index.php?page=quiz_play&id=` + quizId + `">

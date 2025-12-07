@@ -52,12 +52,23 @@ try {
             $controller->submitQuizResults();
             break;
             
+        case 'submit_quiz_results':
+            $controller->submitQuizResults();
+            break;
+            
         case 'get_quizzes_by_category':
             $controller->getQuizzesByCategory();
             break;
             
         case 'get_user_stats':
             $controller->getUserStats();
+            break;
+            
+        // Certificate Generation
+        case 'generate_certificate':
+            require_once __DIR__ . '/controllers/generate_certificate.php';
+            $certController = new CertificateController();
+            $certController->generate();
             break;
             
         // Admin Routes

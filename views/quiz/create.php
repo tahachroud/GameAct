@@ -323,31 +323,6 @@ include 'views/header.php';
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="quiz-image">
-                                    <i class="fa fa-image"></i> Quiz Image (Optional)
-                                </label>
-                                <input type="file" 
-                                       id="quiz-image" 
-                                       name="quiz-image" 
-                                       class="form-control"
-                                       accept="image/*"
-                                       style="padding: 10px;">
-                                <small style="color: #999; display: block; margin-top: 5px;">
-                                    Upload a custom image for your quiz. Accepted formats: JPG, PNG, GIF, WEBP (Max 5MB)
-                                </small>
-                                
-                                <!-- Image Preview -->
-                                <div id="image-preview" style="margin-top: 15px; display: none;">
-                                    <label style="color: white; font-weight: 600; margin-bottom: 10px;">Image Preview:</label>
-                                    <div>
-                                        <img id="preview-img" 
-                                             src="" 
-                                             alt="Image preview"
-                                             style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 2px solid #e75e8d;">
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Quiz Image Upload Section -->
