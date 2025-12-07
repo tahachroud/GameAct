@@ -94,8 +94,7 @@ $validToken = $stmt->fetch();
     </div>
 </div>
 
-<!-- THIS IS THE KEY - java.js with strength bar code -->
-<script src="java.js"></script>
+<script src="assets/js/java.js"></script>
 
 </body>
 </html>
