@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GameAct - Créer Événement</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap -->
+  <link href="../../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- FontAwesome + TemplateMo -->
+  <link rel="stylesheet" href="../../assets/css/fontawesome.css">
+  <link rel="stylesheet" href="../../assets/css/templatemo-cyborg-gaming.css">
+
+  <!-- Events Design -->
+  <link rel="stylesheet" href="events-custom.css">
+
+  <!-- Leaflet CSS for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 2px solid #e94560;
+      box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+    }
+
+    .search-container {
+      position: relative;
+      margin-bottom: 15px;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 12px 45px 12px 15px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      background: #1a1a2e;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    #searchInput:focus {
+      border-color: #e94560;
+      outline: none;
+    }
+
+    #searchBtn {
+      position: absolute;
+      right: 5px;
+      top: 5px;
+      background: #e94560;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    #searchBtn:hover {
+      background: #d63651;
+      transform: scale(1.05);
+    }
+
+    .coordinates-info {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(233, 69, 96, 0.1);
+      border-radius: 8px;
+      color: #e94560;
+      font-size: 13px;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Preloader -->
+  <div id="js-preloader" class="js-preloader">
+    <div class="preloader-inner">
+      <span class="dot"></span>
+      <div class="dots">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <a href="../../index.html" class="logo">
+              <img src="../../assets/images/logo.png" alt="GameAct" style="height:60px;">
+            </a>
+            <ul class="nav">
+              <li><a href="../../index.html">Accueil</a></li>
+              <li><a href="../../browse.html">Parcourir</a></li>
+              <li><a href="index.php" class="active">Events</a></li>
+              <li><a href="../../streams.html">Tutorials</a></li>
+              <li><a href="../../profile.html">Profil</a></li>
+              <li><a href="../../leaderboard.html">Leaderboard</a></li>
+            </ul>
+            <a class='menu-trigger'><span>Menu</span></a>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenu -->
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+
+          <!-- Bouton Retour -->
+          <div class="mb-4">
+            <a href="index.php" class="btn-back">
+              <i class="fa fa-arrow-left"></i> Retour
+            </a>
+          </div>
+
+          <!-- Titre -->
+          <div class="text-center mb-5">
+            <h1 style="color:#e94560; font-size:2.5rem;">Créer un événement</h1>
+          </div>
+
+          <!-- Formulaire -->
+          <div class="form-card">
+            <form method="POST" action="../../../ajoutEvent.php" id="formEvent">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="titre">Titre de l'événement *</label>
+                  <input type="text" id="titre" name="titre" placeholder="Ex: Tournoi Valorant Pro">
+                  <span class="error-message" id="error-titre"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="date">Date de l'événement *</label>
+                  <input type="date" id="date" name="date" placeholder="YYYY-MM-DD">
+                  <span class="error-message" id="error-date"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="heure_deb">Heure de début *</label>
+                  <input type="time" id="heure_deb" name="heure_deb" placeholder="HH:MM">
+                  <span class="error-message" id="error-heure_deb"></span>
+                </div>
+
+                <div class="form-group">
+                  <label for="heure_fin">Heure de fin *</label>
+                  <input type="time" id="heure_fin" name="heure_fin" placeholder="HH:MM">
+                  <span class="error-message" id="error-heure_fin"></span>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2;">
+                  <label for="lieu">Lieu * <small style="color:#aaa;">(Recherchez ou cliquez sur la
+                      carte)</small></label>
+
+                  <!-- Search Bar -->
+                  <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="🔍 Rechercher une adresse (ex: Paris, France)">
+                    <button type="button" id="searchBtn">Rechercher</button>
+                  </div>
+
+                  <!-- Map Container -->
+                  <div id="map"></div>
+
+                  <!-- Coordinates Info -->
+                  <div class="coordinates-info" id="coordsInfo">
+                    📍 Coordonnées: <span id="coordsDisplay"></span>
+                  </div>
+
+                  <!-- Lieu Input (will be auto-filled) -->
+                  <input type="text" id="lieu" name="lieu" placeholder="Ex: Paris Expo" style="margin-top: 15px;">
+                  <span class="error-message" id="error-lieu"></span>
+
+                  <!-- Hidden fields for coordinates -->
+                  <input type="hidden" id="latitude" name="latitude">
+                  <input type="hidden" id="longitude" name="longitude">
+                </div>
+
+                <div class="form-group">
+                  <label for="statut">Statut *</label>
+                  <select id="statut" name="statut">
+                    <option value="">Sélectionner un statut</option>
+                    <option value="à venir">À venir</option>
+                    <option value="en cours">En cours</option>
+                    <option value="terminé">Terminé</option>
+                    <option value="annulé">Annulé</option>
+                  </select>
+                  <span class="error-message" id="error-statut"></span>
+                </div>
+
+                <div class="form-group" style="grid-column: span 2;">
+                  <label for="description">Description *</label>
+                  <textarea id="description" name="description" rows="4"
+                    placeholder="Décrivez votre événement..."></textarea>
+                  <span class="error-message" id="error-description"></span>
+                </div>
+
+                <div class="form-actions" style="grid-column: span 2;">
+                  <button type="submit" class="btn-confirm">Créer l'événement</button>
+                  <button type="button" class="btn-cancel" onclick="window.history.back();">Annuler</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-5 py-4" style="background:#0f0f1e; border-top:1px solid #333;">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <p style="color:#aaa; font-size:0.9rem; margin:0;">
+            Copyright © 2025 <a href="#" style="color:#e94560; text-decoration:none;">GameAct</a>. Tous droits réservés.
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="../../vendor/jquery/jquery.min.js"></script>
+  <script src="../../vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="../../assets/js/custom.js"></script>
+  <script src="controle_saisie.js"></script>
+
+  <!-- Leaflet JS for Maps -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Map Initialization Script -->
+  <script>
+    // Initialize map centered on Paris by default
+    let map = L.map('map').setView([48.8566, 2.3522], 13);
+    let marker = null;
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    // Function to add/update marker
+    function addMarker(lat, lng, address = '') {
+      if (marker) {
+        map.removeLayer(marker);
+      }
+
+      marker = L.marker([lat, lng], {
+        draggable: true
+      }).addTo(map);
+
+      marker.bindPopup(`<b>📍 Lieu sélectionné</b><br>${address || 'Lat: ' + lat.toFixed(4) + ', Lng: ' + lng.toFixed(4)}`).openPopup();
+
+      // Update form fields
+      document.getElementById('latitude').value = lat;
+      document.getElementById('longitude').value = lng;
+
+      // Show coordinates
+      document.getElementById('coordsDisplay').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      document.getElementById('coordsInfo').style.display = 'block';
+
+      // If address provided, update lieu field
+      if (address) {
+        document.getElementById('lieu').value = address;
+      }
+
+      // Handle marker drag
+      marker.on('dragend', function (e) {
+        const position = marker.getLatLng();
+        reverseGeocode(position.lat, position.lng);
+      });
+    }
+
+    // Click on map to place marker
+    map.on('click', function (e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      reverseGeocode(lat, lng);
+    });
+
+    // Reverse geocoding (coordinates to address) using Photon API
+    async function reverseGeocode(lat, lng) {
+      try {
+        // Try Photon API (more reliable than Nominatim, no rate limits)
+        const response = await fetch(`https://photon.komoot.io/reverse?lat=${lat}&lon=${lng}&limit=1`);
+        const data = await response.json();
+
+        if (data.features && data.features.length > 0) {
+          const props = data.features[0].properties;
+          // Build address from components
+          const parts = [];
+          if (props.name) parts.push(props.name);
+          if (props.street) parts.push(props.street);
+          if (props.city) parts.push(props.city);
+          if (props.state) parts.push(props.state);
+          if (props.country) parts.push(props.country);
+
+          const address = parts.length > 0 ? parts.join(', ') : `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+          addMarker(lat, lng, address);
+        } else {
+          // Fallback: just show coordinates
+          addMarker(lat, lng, `📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+        }
+      } catch (error) {
+        console.error('Reverse geocoding error:', error);
+        // Fallback: just show coordinates
+        addMarker(lat, lng, `📍 ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+      }
+    }
+
+    // Search functionality
+    document.getElementById('searchBtn').addEventListener('click', searchLocation);
+    document.getElementById('searchInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchLocation();
+      }
+    });
+
+    async function searchLocation() {
+      const query = document.getElementById('searchInput').value;
+      if (!query) {
+        alert('Veuillez entrer une adresse à rechercher');
+        return;
+      }
+
+      try {
+        // Use Open-Meteo Geocoding API (same as weather widget, no rate limits)
+        const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=fr&format=json`);
+        const data = await response.json();
+
+        if (data.results && data.results.length > 0) {
+          const result = data.results[0];
+          const lat = result.latitude;
+          const lng = result.longitude;
+          const address = `${result.name}${result.admin1 ? ', ' + result.admin1 : ''}${result.country ? ', ' + result.country : ''}`;
+
+          // Center map and add marker
+          map.setView([lat, lng], 15);
+          addMarker(lat, lng, address);
+        } else {
+          alert('Aucun résultat trouvé. Essayez une autre adresse.');
+        }
+      } catch (error) {
+        console.error('Geocoding error:', error);
+        alert('Erreur lors de la recherche. Veuillez réessayer.');
+      }
+    }
+
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        map.setView([lat, lng], 13);
+        // Optionally add a marker at current location
+        // addMarker(lat, lng, 'Ma position');
+      }, function (error) {
+        console.log('Geolocation error:', error);
+        // Keep default Paris location
+      });
+    }
+  </script>
+</body>
+
+</html>
