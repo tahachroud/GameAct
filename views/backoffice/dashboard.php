@@ -7,6 +7,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+if (!($_SESSION['is_superadmin'] ?? false)) {
+    if (isset($_GET['id']) && (int)$_GET['id'] === 25) {  
+        $_SESSION['error'] = "You cannot modify or delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+    
+    if (isset($_GET['delete']) && (int)$_GET['delete'] === 26) {
+        $_SESSION['error'] = "You cannot delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+}
+
 $userController = new userController();
 $users = $userController->listUsers(); 
 
@@ -105,9 +119,15 @@ if (isset($_GET['delete'])) {
                         </td>
                         <td>
                             <a href="update_user.php?id=<?= $user['id'] ?>" class="btn btn-update">Update</a>
-                            <a href="delete_user.php?id=<?= $user['id'] ?>" class="btn btn-delete">
+                            <?php if ($user['is_superadmin']): ?>
+                                <span style="color:#e75e8d; font-weight:bold;">SUPER ADMIN</span>
+                            <?php else: ?>
+                                <a href="?delete=<?= $user['id'] ?>" 
+                                class="btn btn-delete"
+                                onclick="return confirm('Are you sure you want to delete <?= addslashes($user['name']) ?>?')">
                                 Delete
-                            </a>
+                                </a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

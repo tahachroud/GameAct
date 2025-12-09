@@ -6,6 +6,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+if (!($_SESSION['is_superadmin'] ?? false)) {
+    if (isset($_GET['id']) && (int)$_GET['id'] === 25) {  
+        $_SESSION['error'] = "You cannot modify or delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+    
+    if (isset($_GET['delete']) && (int)$_GET['delete'] === 26) {
+        $_SESSION['error'] = "You cannot delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+}
+
 require_once '../../controllers/userController.php';
 $userController = new userController();
 
@@ -26,6 +40,12 @@ if (!$user) {
 $error = $success = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $superAdminId = 25; 
+    if ($id == $superAdminId) {
+        $_SESSION['error'] = "You cannot modify the Super Admin account!";
+        header("Location: dashboard.php");
+        exit;
+    }
     $name      = trim($_POST['name']);
     $lastname  = trim($_POST['lastname']);
     $email     = trim($_POST['email']);

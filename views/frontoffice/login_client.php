@@ -1,6 +1,9 @@
 <?php
 session_start();
 require_once '../../controllers/userController.php';
+require_once '../../vendor/autoload.php';  
+use PragmaRX\Google2FA\Google2FA;
+
 $userController = new userController();
 $error = "";
 
@@ -12,16 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($user && password_verify($password, $user['password'])) {
         
-        $_SESSION['user_id']   = $user['id'];
-        $_SESSION['user_name'] = $user['name'] . " " . $user['lastname'];
-        $_SESSION['role']      = $user['role'];
+        if (!empty($user['secret_2fa'])) {
+            $_SESSION['temp_user_id'] = $user['id'];
+            header("Location: 2fa_verify.php");
+            exit;
+        } else {
+            $google2fa = new Google2FA();
+            $secret = $google2fa->generateSecretKey();
 
-        if (isset($_POST['remember'])) {
-            setcookie('user_email', $email, time() + (30 * 24 * 3600), "/");
+            $pdo = config::getConnexion();
+            $pdo->prepare("UPDATE users SET secret_2fa = ? WHERE id = ?")
+                ->execute([$secret, $user['id']]);
+
+            $_SESSION['temp_user_id'] = $user['id'];
+            $_SESSION['show_qr'] = true;
+            $_SESSION['secret_2fa'] = $secret;
+            $_SESSION['is_superadmin'] = (bool)$user['is_superadmin'];
+            header("Location: 2fa_verify.php");
+            exit;
         }
-
-        header("Location: profile.php");
-        exit;
     } else {
         $error = "Invalid email or password.";
     }

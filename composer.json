@@ -1,0 +1,10 @@
+{
+    "name": "taha/gameact",
+    "description": "GameAct Project",
+    "require": {
+        "php": "^7.4|^8.0",
+        "bacon/bacon-qr-code": "^3.0",
+        "pragmarx/google2fa": "^9.0"
+    },
+    "minimum-stability": "stable"
+}

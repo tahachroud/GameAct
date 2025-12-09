@@ -1,6 +1,11 @@
 <?php
 session_start();
 require_once '../../controllers/userController.php';
+require_once '../../PHPMailer/src/PHPMailer.php';
+require_once '../../PHPMailer/src/SMTP.php';
+require_once '../../PHPMailer/src/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
 
 $userController = new userController();
 $message = "";
@@ -10,40 +15,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $userController->getUserByEmail($email);
 
     if ($user) {
-        // Generate token
-        $token = bin2hex(random_bytes(25));
+        $token = bin2hex(random_bytes(32));
         $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-        // Save to user row
         $pdo = config::getConnexion();
         $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?")
             ->execute([$token, $expires, $email]);
 
-        // FULL RESET LINK
-        $link = "http://localhost/projet/views/frontoffice/reset_password.php?token=" . $token;
+        $reset_link = "http://localhost/projet/views/frontoffice/reset_password.php?token=" . $token;
 
-        // TEST MODE — SHOW LINK DIRECTLY (no email, no error)
-        $message = "
-        <div style='background:#2a2c2d; padding:25px; border-radius:16px; margin:25px 0; text-align:center; border:2px solid #e75e8d;'>
-            <h3 style='color:#e75e8d; margin:0 0 15px;'>Reset Link Ready!</h3>
-            <p style='color:#ccc; margin:10px 0;'>Click the button below or copy the link</p>
-            
-            <a href='$link' style='background:linear-gradient(135deg,#e75e8d,#f54f89); color:white; padding:16px 36px; text-decoration:none; border-radius:50px; font-weight:bold; display:inline-block; margin:15px 0; box-shadow:0 8px 20px rgba(231,94,141,0.4);'>
-                Reset My Password Now
-            </a>
-            
-            <p style='font-size:13px; color:#999; word-break:break-all; background:#1e1e1e; padding:12px; border-radius:8px; margin:15px 0;'>
-                $link
-            </p>
-            <small style='color:#666;'>Valid for 1 hour • For testing only</small>
-        </div>";
+        $mail = new PHPMailer(true);
+        try {
+            $mail->isSMTP();
+            $mail->Host       = 'smtp.gmail.com';
+            $mail->SMTPAuth   = true;
+            $mail->Username   = 'tahachroud06@gmail.com';
+            $mail->Password   = 'zacf nhgl nldq sgtu';
+            $mail->SMTPSecure = 'tls';
+            $mail->Port       = 587;
+
+            $mail->setFrom('no-reply@gameact.com', 'GameAct');
+            $mail->addAddress($email);
+            $mail->isHTML(true);
+            $mail->Subject = 'Password Reset - GameAct';
+            $mail->Body    = "
+                <h2>Reset Your Password</h2>
+                <p>Click the button below to reset your password:</p>
+                <br>
+                <a href='$reset_link' style='background:#e75e8d; color:white; padding:15px 30px; text-decoration:none; border-radius:50px; font-weight:bold;'>
+                    Reset Password
+                </a>
+                <br><br>
+                <small>This link expires in 1 hour.</small>
+            ";
+
+            $mail->send();
+            $message = "<p style='color:#4caf50; text-align:center;'>Check your email! We sent you a reset link.</p>";
+        } catch (Exception $e) {
+            $message = "<p style='color:red; text-align:center;'>Email failed. Try again later.</p>";
+        }
     } else {
-        $message = "<p style='color:#e75e8d; text-align:center; padding:15px; background:#2a2c2d; border-radius:12px;'>
-            If that email exists in our system, a reset link has been sent.
-        </p>";
+        $message = "<p style='color:#4caf50; text-align:center;'>If your email exists, a reset link was sent.</p>";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -79,14 +95,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </nav>
     </header>
 
-<div class="login-container" style="margin-top: 120px;">
+<div class="login-container" style="margin-top:150px;">
     <div class="login-card">
-        <h1 style="color:#e75e8d; text-align:center; margin-bottom:8px;">Forgot Password?</h1>
-        <p style="text-align:center; color:#aaa; margin-bottom:30px;">Enter your email below</p>
+        <h1 style="color:#e75e8d; text-align:center;">Forgot Password?</h1>
+        <p style="text-align:center; color:#aaa;">Enter your email to reset password</p>
 
         <?php if($message) echo $message; ?>
 
-        <?php if (!$message || strpos($message, 'exists') !== false): ?>
         <form method="POST">
             <div class="form-group">
                 <input type="email" name="email" placeholder="your@email.com" required style="text-align:center;">
@@ -95,15 +110,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Send Reset Link
             </button>
         </form>
-        <?php endif; ?>
 
-        <div style="text-align:center; margin-top:30px;">
-            <a href="login_client.php" style="color:#ec6090; font-size:15px;">
-                Back to Login
-            </a>
+        <div style="text-align:center; margin-top:20px;">
+            <a href="login_client.php" style="color:#ec6090;">Back to Login</a>
         </div>
     </div>
 </div>
+
 
   <footer>
     <div class="container">

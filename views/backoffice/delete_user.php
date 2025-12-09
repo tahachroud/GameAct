@@ -6,6 +6,20 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
+if (!($_SESSION['is_superadmin'] ?? false)) {
+    if (isset($_GET['id']) && (int)$_GET['id'] === 25) {  
+        $_SESSION['error'] = "You cannot modify or delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+    
+    if (isset($_GET['delete']) && (int)$_GET['delete'] === 26) {
+        $_SESSION['error'] = "You cannot delete the Super Admin!";
+        header("Location: dashboard.php");
+        exit;
+    }
+}
+
 require_once '../../controllers/userController.php';
 $userController = new userController();
 
