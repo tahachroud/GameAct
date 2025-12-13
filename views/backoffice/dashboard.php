@@ -7,27 +7,48 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit;
 }
 
-if (!($_SESSION['is_superadmin'] ?? false)) {
-    if (isset($_GET['id']) && (int)$_GET['id'] === 25) {  
-        $_SESSION['error'] = "You cannot modify or delete the Super Admin!";
-        header("Location: dashboard.php");
-        exit;
-    }
-    
-    if (isset($_GET['delete']) && (int)$_GET['delete'] === 26) {
-        $_SESSION['error'] = "You cannot delete the Super Admin!";
-        header("Location: dashboard.php");
-        exit;
-    }
+$userController = new userController();
+$users = $userController->listUsers();
+
+// Sorting logic with toggle direction
+$sort = $_GET['sort'] ?? 'role';     // 'role' or 'age'
+$order = $_GET['order'] ?? 'asc';    // 'asc' or 'desc'
+
+// Toggle order when clicking the same column
+if (isset($_GET['sort']) && $_GET['sort'] === $sort) {
+    $order = ($order === 'asc') ? 'desc' : 'asc';
 }
 
-$userController = new userController();
-$users = $userController->listUsers(); 
+if ($sort === 'age') {
+    usort($users, function($a, $b) use ($order) {
+        return ($order === 'asc') ? ($a['age'] <=> $b['age']) : ($b['age'] <=> $a['age']);
+    });
+} else {
+    // Default: superadmin > admin > client + alphabetical name
+    $roleOrder = ['superadmin' => 0, 'admin' => 1, 'client' => 2];
+    usort($users, function($a, $b) use ($roleOrder, $order) {
+        $roleA = $roleOrder[$a['role']] ?? 3;
+        $roleB = $roleOrder[$b['role']] ?? 3;
+        
+        if ($roleA === $roleB) {
+            $nameA = $a['name'] . ' ' . $a['lastname'];
+            $nameB = $b['name'] . ' ' . $b['lastname'];
+            return ($order === 'asc') ? strcasecmp($nameA, $nameB) : strcasecmp($nameB, $nameA);
+        }
+        return ($order === 'asc') ? ($roleA <=> $roleB) : ($roleB <=> $roleA);
+    });
+}
 
+// Delete user
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
-    $userController->deleteUser($id);
-    header("Location: dashboard.php");
+    if ($id !== $_SESSION['user_id']) {
+        $userController->deleteUser($id);
+        $_SESSION['success'] = "User deleted successfully!";
+    } else {
+        $_SESSION['error'] = "You cannot delete yourself!";
+    }
+    header("Location: dashboard.php?sort=$sort&order=$order");
     exit;
 }
 ?>
@@ -40,19 +61,24 @@ if (isset($_GET['delete'])) {
     <title>Admin Dashboard - GameAct</title>
     <link rel="stylesheet" href="../frontoffice/assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>
-        .alert {
-            padding: 16px 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
+    <style>
+        .sort-buttons { text-align: center; margin: 20px 0; }
+        .sort-btn { 
+            padding: 12px 24px; margin: 0 10px; border-radius: 50px; 
+            background: #333; color: white; text-decoration: none; font-weight: bold;
+            transition: 0.3s; display: inline-block;
         }
-        .success { background: rgba(76, 175, 80, 0.2); color: #4caf50; border: 2px solid #4caf50; }
-        .error   { background: rgba(255, 77, 77, 0.2); color: #ff6b6b; border: 2px solid #ff4d4d; }
+        .sort-btn.active { background: #e75e8d; }
+        .sort-btn:hover { background: #e75e8d; }
+        .sort-btn::after {
+            content: ' ↑↓';
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        .alert { padding: 15px; border-radius: 12px; margin: 20px 0; text-align: center; font-weight: bold; }
+        .success { background: rgba(76,175,80,0.2); color: #4caf50; border: 2px solid #4caf50; }
+        .error { background: rgba(255,77,77,0.2); color: #ff6b6b; border: 2px solid #ff4d4d; }
     </style>
-
 </head>
 <body>
 
@@ -62,37 +88,39 @@ if (isset($_GET['delete'])) {
             <img src="../frontoffice/assets/images/logo.png" alt="GameAct">
         </a>
         <ul class="nav">
-            <li><a href="dashboard.php" class="active">Admin Dashboard</a></li>
-            <li><a href="add_user.php">Add User</a></li>
+            <li><a href="dashboard.php" class="active">Users List</a></li>
+            <li><a href="add_user.php">Add Admin</a></li>
             <li><a href="../frontoffice/profile.php">Back to Site</a></li>
             <li><a href="../frontoffice/login_client.php?logout=1" style="color:#ff4d4d;">Logout</a></li>
         </ul>
     </nav>
 </header>
 
-
-
 <div class="dashboard-container">
     <div class="dashboard-card">
-
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert success">
-                <?= $_SESSION['success'] ?>
-            </div>
-            <?php unset($_SESSION['success']); ?>
-        <?php endif; ?>
-
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert error">
-                <?= $_SESSION['error'] ?>
-            </div>
-            <?php unset($_SESSION['error']); ?>
-        <?php endif; ?>
-
         <h1>Users Management</h1>
 
+        <!-- Messages -->
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="alert success"><?= $_SESSION['success']; unset($_SESSION['success']); ?></div>
+        <?php endif; ?>
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="alert error"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+        <?php endif; ?>
+
+        <!-- Sort Buttons -->
+        <div class="sort-buttons">
+            <a href="?sort=role&order=asc" class="sort-btn <?= $sort === 'role' ? 'active' : '' ?>">
+                By Role & Name
+            </a>
+            <a href="?sort=age&order=<?= ($sort === 'age' && $order === 'asc') ? 'desc' : 'asc' ?>" 
+               class="sort-btn <?= $sort === 'age' ? 'active' : '' ?>">
+                By Age <?= ($sort === 'age' && $order === 'asc') ? '↑' : '↓' ?>
+            </a>
+        </div>
+
         <?php if (empty($users)): ?>
-            <p class="no-users">No users found in the database.</p>
+            <p style="text-align:center; color:#aaa; padding:40px;">No users found.</p>
         <?php else: ?>
             <table>
                 <thead>
@@ -101,6 +129,7 @@ if (isset($_GET['delete'])) {
                         <th>Name</th>
                         <th>Email</th>
                         <th>CIN</th>
+                        <th>Age</th>
                         <th>Role</th>
                         <th>Actions</th>
                     </tr>
@@ -112,22 +141,22 @@ if (isset($_GET['delete'])) {
                         <td><?= htmlspecialchars($user['name'] . " " . $user['lastname']) ?></td>
                         <td><?= htmlspecialchars($user['email']) ?></td>
                         <td><?= htmlspecialchars($user['cin']) ?></td>
+                        <td><?= $user['age'] ?></td>
                         <td>
-                            <strong style="color: <?= $user['role'] === 'admin' ? '#e75e8d' : '#4caf50' ?>">
+                            <strong style="color: <?= 
+                                $user['role'] === 'superadmin' ? '#ff00ff' : 
+                                ($user['role'] === 'admin' ? '#e75e8d' : '#4caf50') 
+                            ?>">
                                 <?= ucfirst($user['role']) ?>
                             </strong>
                         </td>
                         <td>
                             <a href="update_user.php?id=<?= $user['id'] ?>" class="btn btn-update">Update</a>
-                            <?php if ($user['is_superadmin']): ?>
-                                <span style="color:#e75e8d; font-weight:bold;">SUPER ADMIN</span>
-                            <?php else: ?>
-                                <a href="?delete=<?= $user['id'] ?>" 
-                                class="btn btn-delete"
-                                onclick="return confirm('Are you sure you want to delete <?= addslashes($user['name']) ?>?')">
-                                Delete
-                                </a>
-                            <?php endif; ?>
+                            <a href="?delete=<?= $user['id'] ?>&sort=<?= $sort ?>&order=<?= $order ?>" 
+                               class="btn btn-delete"
+                               onclick="return confirm('Delete <?= addslashes($user['name'].' '.$user['lastname']) ?> forever?')">
+                               Delete
+                            </a>
                         </td>
                     </tr>
                     <?php endforeach; ?>
@@ -136,19 +165,6 @@ if (isset($_GET['delete'])) {
         <?php endif; ?>
     </div>
 </div>
-
-  <footer>
-    <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <p>Copyright © 2036 <a href="#">GameAct</a> Company. All rights reserved. 
-          
-          <br>Design: <a href="#">Taha Chroud</a>  Distributed By <a href="#">APEX   </a></p>
-        </div>
-      </div>
-    </div>
-  </footer>
-  
 
 </body>
 </html>
