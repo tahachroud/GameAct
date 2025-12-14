@@ -3,8 +3,8 @@
 // Vérifier si le formulaire est soumis
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Inclure les fichiers nécessaires
-    require_once('C:\xampp\htdocs\events\controller\eventC.php');
-    require_once('C:\xampp\htdocs\events\model\event.php');
+    require_once(__DIR__ . '/../controller/eventC.php');
+    require_once(__DIR__ . '/../model/event.php');
 
     $eventC = new EventC();
 

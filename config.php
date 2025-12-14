@@ -1,32 +1,29 @@
 <?php
-
 class config
-{
-    private string $host = "localhost";
-    private string $dbname = "gameact";
-    private string $username = "root";
-    private string $password = "";
-
-    private static ?PDO $connection = null;
-
-    public function getConnection(): PDO
+{   private static $pdo = null;
+    public static function getConnexion()
     {
-        if (self::$connection === null) {
+        if (!isset(self::$pdo)) {
+            $servername="localhost";
+            $username="root";
+            $password ="";
+            $dbname="gameact";
             try {
-                self::$connection = new PDO(
-                    "mysql:host={$this->host};dbname={$this->dbname};charset=utf8",
-                    $this->username,
-                    $this->password
+                self::$pdo = new PDO("mysql:host=$servername;dbname=$dbname",
+                        $username,
+                        $password
+                   
                 );
-
-                self::$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-
-            } catch (PDOException $e) {
-                die("Database Connection Error: " . $e->getMessage());
+                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+               
+               
+            } catch (Exception $e) {
+                die('Erreur: ' . $e->getMessage());
             }
         }
-
-        return self::$connection;
+        return self::$pdo;
     }
 }
+config::getConnexion();
+?>
