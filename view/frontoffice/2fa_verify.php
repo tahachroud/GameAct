@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once '../../vendor/autoload.php';  // ← MUST HAVE THIS
-require_once '../../controllers/userController.php';
+require_once '../../controller/userController.php';
 use PragmaRX\Google2FA\Google2FA;
 use Bacon\BaconQrCode\Renderer\ImageRenderer;
 use Bacon\BaconQrCode\Renderer\Image\ImagickImageBackEnd;

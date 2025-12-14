@@ -20,7 +20,7 @@ if (!($_SESSION['is_superadmin'] ?? false)) {
     }
 }
 
-require_once '../../controllers/userController.php';
+require_once '../../controller/userController.php';
 $userController = new userController();
 $success = $error = "";
 

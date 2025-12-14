@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../controllers/userController.php';
+require_once '../../controller/userController.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../frontoffice/login_client.php");

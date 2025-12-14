@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../controllers/userController.php';
+require_once '../../controller/userController.php';
 require_once '../../vendor/autoload.php';  
 use PragmaRX\Google2FA\Google2FA;
 

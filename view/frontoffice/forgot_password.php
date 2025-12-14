@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../controllers/userController.php';
+require_once '../../controller/userController.php';
 require_once '../../PHPMailer/src/PHPMailer.php';
 require_once '../../PHPMailer/src/SMTP.php';
 require_once '../../PHPMailer/src/Exception.php';
@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare("UPDATE users SET reset_token = ?, reset_expires = ? WHERE email = ?")
             ->execute([$token, $expires, $email]);
 
-        $reset_link = "http://localhost/projet/views/frontoffice/reset_password.php?token=" . $token;
+        $reset_link = "http://localhost/projet/view/frontoffice/reset_password.php?token=" . $token;
 
         $mail = new PHPMailer(true);
         try {

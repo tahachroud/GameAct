@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../../controllers/userController.php';
+require_once __DIR__ . '/../../controller/userController.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login_client.php');
