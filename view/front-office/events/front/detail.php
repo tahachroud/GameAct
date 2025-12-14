@@ -61,8 +61,11 @@ function formatDateRange($date, $heure_deb, $heure_fin) {
   <link rel="stylesheet" href="../../assets/css/fontawesome.css">
   <link rel="stylesheet" href="../../assets/css/templatemo-cyborg-gaming.css">
   <link rel="stylesheet" href="events-custom.css">
+  <link rel="stylesheet" href="../../../../public/assets/css/moving-bg.css">
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <div id="js-preloader" class="js-preloader">
     <div class="preloader-inner">

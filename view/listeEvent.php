@@ -25,8 +25,11 @@ if ($searchActive) {
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="backoffice/css/style-admin.css">
-  
+  <link rel="stylesheet" href="../public/assets/css/moving-bg.css">
   <style>
+    body {
+      background: transparent !important;
+    }
     /* Action buttons grid layout */
     .action-buttons {
       display: grid !important;
@@ -66,6 +69,8 @@ if ($searchActive) {
   </script>
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <!-- Header -->
   <header class="app-header">

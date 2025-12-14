@@ -38,6 +38,7 @@ try {
   <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
   <link rel="stylesheet" href="../assets/css/owl.css">
   <link rel="stylesheet" href="../assets/css/animate.css">
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
   <style>
     body {
       background: #0f0f1e;
@@ -267,6 +268,8 @@ try {
   </style>
 </head>
 <body>
+  <div class="moving-bg"></div>
+
   <div id="js-preloader" class="js-preloader" style="display: none;">
     <div class="preloader-inner">
       <span class="dot"></span>

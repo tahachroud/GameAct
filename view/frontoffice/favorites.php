@@ -33,6 +33,7 @@ $cartCount = $gameController->getCartItemCount($userId);
   <link rel="stylesheet" href="../assets/css/owl.css">
   <link rel="stylesheet" href="../assets/css/animate.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
 
   <style>
     .profile-img {
@@ -168,6 +169,8 @@ $cartCount = $gameController->getCartItemCount($userId);
 </head>
 
 <body>
+  <div class="moving-bg"></div>
+
   <!-- Preloader -->
   <div id="js-preloader" class="js-preloader">
     <div class="preloader-inner">

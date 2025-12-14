@@ -64,7 +64,7 @@
 
 
             <ul class="nav">
-               <li><a href="<?= $baseUrl ?>/index-community.php?action=search_form">Advanced Search</a></li>
+               <li><a href="<?= $baseUrl ?>/index-community.php?action=search_form" id="search-link">🔍 Advanced Search</a></li>
               <li><a href="<?= $baseUrl ?>/index.php">Home</a></li>
               <li><a href="<?= $baseUrl ?>/shop-home.php">Shop</a></li>
 <li>
@@ -98,6 +98,10 @@
   <!-- JS -->
   <script src="<?= $baseUrl ?>/public/vendor/jquery/jquery.min.js"></script>
   <script src="<?= $baseUrl ?>/public/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Template JS -->
+  <script src="<?= $baseUrl ?>/public/assets/js/isotope.min.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/custom.js"></script>
 
   <!-- ORDER FIXED -->
   <script src="<?= $baseUrl ?>/public/assets/js/feed.js"></script>

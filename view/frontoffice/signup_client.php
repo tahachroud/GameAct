@@ -175,8 +175,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
 </head>
 <body>
+    <div class="moving-bg"></div>
+
     <header class="header-area header-sticky">
         <nav class="main-nav">
             <a href="index.html" class="logo">

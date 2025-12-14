@@ -51,10 +51,11 @@ $games = $gameController->getAllGames();
   <link rel="stylesheet" href="../assets/css/fontawesome.css">
   <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
   
   <style>
     body {
-      background: #0f0f1e;
+      background: transparent !important;
       font-family: 'Poppins', sans-serif;
     }
     .admin-sidebar { 
@@ -72,7 +73,7 @@ $games = $gameController->getAllGames();
     .admin-content { 
       margin-left: 250px; 
       padding: 40px; 
-      background: #0f0f1e; 
+      background: transparent !important; 
       min-height: 100vh;
     }
     .game-card { 
@@ -164,6 +165,8 @@ $games = $gameController->getAllGames();
   </style>
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <!-- Sidebar -->
   <div class="admin-sidebar">
@@ -280,7 +283,7 @@ $games = $gameController->getAllGames();
   </div>
 
   <!-- Footer -->
-  <footer style="margin-left: 250px; padding: 20px 40px; background: #0f0f1e;">
+  <footer style="margin-left: 250px; padding: 20px 40px; background: transparent;">
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12 text-center">

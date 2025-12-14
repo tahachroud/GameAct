@@ -4,10 +4,10 @@
             "id": "poll_6770e4a2c1234",
             "question": "What's your favorite game genre?",
             "options": {
-                "FPS": 26,
-                "RPG": 20,
-                "Strategy": 12,
-                "Sports": 10
+                "FPS": 27,
+                "RPG": 26,
+                "Strategy": 13,
+                "Sports": 11
             },
             "is_active": true,
             "created_at": "2025-12-05 12:00:00"

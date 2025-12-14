@@ -35,12 +35,26 @@ $popularCategories = [
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <title>GameAct - Your Ultimate Gaming Platform</title>
 
-  <link href="view/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="view/assets/css/fontawesome.css">
-  <link rel="stylesheet" href="view/assets/css/templatemo-cyborg-gaming.css">
-  <link rel="stylesheet" href="view/assets/css/owl.css">
-  <link rel="stylesheet" href="view/assets/css/animate.css">
+  <?php
+  $base = dirname($_SERVER['PHP_SELF']);
+  if ($base === '/' || $base === '\\') $base = '';
+  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+  ?>
+
+  <!-- FRONTEND CSS -->
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/templatemo-cyborg-gaming.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/animate.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/moving-bg.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/owl.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+
+  <!-- Feed CSS should load LAST to override template styles -->
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <style>
     /* Hero Section */
@@ -269,6 +283,8 @@ $popularCategories = [
 </head>
 
 <body>
+  <div class="moving-bg"></div>
+
   <!-- Preloader -->
   <div id="js-preloader" class="js-preloader">
     <div class="preloader-inner">
@@ -486,11 +502,25 @@ $popularCategories = [
   </footer>
 
   <!-- Scripts -->
-  <script src="view/vendor/jquery/jquery.min.js"></script>
-  <script src="view/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="view/assets/js/isotope.min.js"></script>
-  <script src="view/assets/js/owl-carousel.js"></script>
-  <script src="view/assets/js/custom.js"></script>
+  <script src="<?= $baseUrl ?>/public/vendor/jquery/jquery.min.js"></script>
+  <script src="<?= $baseUrl ?>/public/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Template JS -->
+  <script src="<?= $baseUrl ?>/public/assets/js/isotope.min.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/custom.js"></script>
+
+  <!-- ORDER FIXED -->
+  <script src="<?= $baseUrl ?>/public/assets/js/feed.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/like.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/share.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/poll.js"></script>
+
+  <!-- MUST BE LAST (validation attaches after DOM + feed build) -->
+  <script src="<?= $baseUrl ?>/public/assets/js/community_validation.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/tts.js"></script>
+
+  <!-- Additional shop scripts -->
+  <script src="<?= $baseUrl ?>/public/assets/js/owl-carousel.js"></script>
 
   <script>
     // Charger le compteur de favoris

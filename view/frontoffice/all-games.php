@@ -45,9 +45,25 @@ $cartCount = $gameController->getCartItemCount($userId);
 
   <title>GameAct - All Games</title>
 
-  <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/css/fontawesome.css">
-  <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
+  <?php
+  $base = dirname($_SERVER['PHP_SELF']);
+  if ($base === '/' || $base === '\\') $base = '';
+  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+  ?>
+
+  <!-- FRONTEND CSS -->
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/templatemo-cyborg-gaming.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/animate.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/moving-bg.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/owl.css">
+
+  <!-- Feed CSS should load LAST to override template styles -->
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link rel="stylesheet" href="../assets/css/owl.css">
   <link rel="stylesheet" href="../assets/css/animate.css">
   <link rel="stylesheet" href="../assets/css/flex-slider.css">
@@ -182,6 +198,8 @@ $cartCount = $gameController->getCartItemCount($userId);
 </head>
 
 <body>
+
+  <div class="moving-bg"></div>
 
   <!-- Preloader -->
   <div id="js-preloader" class="js-preloader" style="display: none;">
@@ -346,14 +364,28 @@ $cartCount = $gameController->getCartItemCount($userId);
   </footer>
 
   <!-- Scripts -->
-  <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
-  <script src="../assets/js/isotope.min.js"></script>
-  <script src="../assets/js/owl-carousel.js"></script>
-  <script src="../assets/js/flex-slider.js"></script>
-  <script src="../assets/js/tabs.js"></script>
-  <script src="../assets/js/popup.js"></script>
-  <script src="../assets/js/custom.js"></script>
+  <script src="<?= $baseUrl ?>/public/vendor/jquery/jquery.min.js"></script>
+  <script src="<?= $baseUrl ?>/public/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+  <!-- Template JS -->
+  <script src="<?= $baseUrl ?>/public/assets/js/isotope.min.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/custom.js"></script>
+
+  <!-- ORDER FIXED -->
+  <script src="<?= $baseUrl ?>/public/assets/js/feed.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/like.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/share.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/poll.js"></script>
+
+  <!-- MUST BE LAST (validation attaches after DOM + feed build) -->
+  <script src="<?= $baseUrl ?>/public/assets/js/community_validation.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/tts.js"></script>
+
+  <!-- Additional shop scripts -->
+  <script src="<?= $baseUrl ?>/public/assets/js/owl-carousel.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/flex-slider.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/tabs.js"></script>
+  <script src="<?= $baseUrl ?>/public/assets/js/popup.js"></script>
 
   <script>
     // Charger le compteur de favoris

@@ -33,6 +33,7 @@ try {
   <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/fontawesome.css">
   <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
   <style>
     body { background: #0f0f1e; font-family: 'Poppins', sans-serif; }
     .checkout-container { background:#16213e; border-radius:12px; padding:30px; margin-top:30px; color:#fff; }
@@ -56,6 +57,8 @@ try {
   </style>
 </head>
 <body>
+  <div class="moving-bg"></div>
+
   <header class="header-area header-sticky">
     <div class="container">
       <div class="row">

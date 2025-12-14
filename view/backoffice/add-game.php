@@ -92,11 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link href="../vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/fontawesome.css">
   <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
   <style>
     body {
-      background: #0f0f1e;
+      background: transparent !important;
       font-family: 'Poppins', sans-serif;
     }
     .admin-sidebar { 
@@ -307,6 +308,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </style>
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <div class="admin-sidebar">
     <div class="text-center mb-4">

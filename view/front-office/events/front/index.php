@@ -46,8 +46,11 @@ function formatDate($date) {
 
   <!-- Events Design -->
   <link rel="stylesheet" href="events-custom.css">
+  <link rel="stylesheet" href="../../../../public/assets/css/moving-bg.css">
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <!-- Preloader -->
   <div id="js-preloader" class="js-preloader">

@@ -88,6 +88,7 @@ $downloadLink = normalize_path($game['download_link'] ?? '');
   <link rel="stylesheet" href="../assets/css/templatemo-cyborg-gaming.css">
   <link rel="stylesheet" href="../assets/css/owl.css">
   <link rel="stylesheet" href="../assets/css/animate.css">
+  <link rel="stylesheet" href="../../public/assets/css/moving-bg.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
 
   <style>
@@ -262,6 +263,8 @@ $downloadLink = normalize_path($game['download_link'] ?? '');
   </style>
 </head>
 <body>
+
+  <div class="moving-bg"></div>
 
   <!-- Header -->
   <header class="header-area header-sticky">

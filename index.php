@@ -16,6 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <link rel="stylesheet" href="view/assets/css/fontawesome.css">
   <link rel="stylesheet" href="view/assets/css/templatemo-cyborg-gaming.css">
   <link rel="stylesheet" href="view/assets/css/animate.css">
+  <link rel="stylesheet" href="public/assets/css/moving-bg.css">
 
   <style>
     body {
@@ -246,6 +247,8 @@ if (session_status() === PHP_SESSION_NONE) {
 </head>
 
 <body>
+  <div class="moving-bg"></div>
+
   <!-- Hero Section -->
   <div class="hero-section">
     <div class="hero-content">

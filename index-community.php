@@ -134,9 +134,9 @@ switch ($action) {
         break;
     case 'search_form':
         ob_start();
-        include 'views/posts/search_form.php';
+        include __DIR__ . '/view/posts/search_form.php';
         $content = ob_get_clean();
-        include 'views/layout_front.php';
+        include __DIR__ . '/view/layout_front.php';
         break;
     case 'tts_read':
         require_once __DIR__ . '/services/TTSService.php';
