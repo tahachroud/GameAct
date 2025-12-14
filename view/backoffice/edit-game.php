@@ -391,12 +391,14 @@ $categories = [
             </div>
           <?php else: ?>
             <div class="current-file" style="color: #aaa;">
-              <i class="fa fa-info-circle"></i> No ZIP file uploaded yet
+              <i class="fa fa-info-circle"></i> No ZIP file URL set yet
             </div>
           <?php endif; ?>
-          <input type="file" class="form-control mt-2" name="zip_file" accept=".zip">
+          <input type="url" class="form-control mt-2" name="zip_file_url" 
+                 placeholder="Enter ZIP file URL (e.g., https://example.com/game.zip)"
+                 value="<?= htmlspecialchars($game['zip_file_path'] ?? '') ?>">
           <div class="file-info">
-            <i class="fa fa-info-circle"></i> Leave empty to keep current ZIP | Format: ZIP | Max: 500MB
+            <i class="fa fa-info-circle"></i> Leave empty to keep current ZIP | Enter direct URL to ZIP file
           </div>
         </div>
 
