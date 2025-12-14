@@ -27,12 +27,3 @@ class config
 }
 config::getConnexion();
 ?>
-
-
-
-
-
-
-
-
-
