@@ -273,9 +273,9 @@ if (session_status() === PHP_SESSION_NONE) {
         </a>
 
         <!-- Module 2: FEED -->
-        <a href="#" class="module-card module-feed" onclick="showComingSoon('Feed'); return false;">
-          <span class="status-badge status-soon">
-            <i class="fa fa-clock"></i> Coming Soon
+        <a href="index-community.php?action=community" class="module-card module-feed">
+          <span class="status-badge status-active">
+            <i class="fa fa-check-circle"></i> Active
           </span>
           <div class="module-icon">
             <i class="fa fa-rss"></i>
@@ -297,9 +297,9 @@ if (session_status() === PHP_SESSION_NONE) {
         </a>
 
         <!-- Module 4: EVENTS -->
-        <a href="#" class="module-card module-events" onclick="showComingSoon('Events'); return false;">
-          <span class="status-badge status-soon">
-            <i class="fa fa-clock"></i> Coming Soon
+        <a href="view/front-office/events/front/index.php" class="module-card module-events">
+          <span class="status-badge status-active">
+            <i class="fa fa-check-circle"></i> Active
           </span>
           <div class="module-icon">
             <i class="fa fa-calendar"></i>
