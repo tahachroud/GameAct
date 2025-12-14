@@ -1,5 +1,5 @@
 function readPost(id) {
-    fetch("index.php?action=tts_read&id=" + id)
+fetch("index-community.php?action=tts_read&id=" + id)
         .then(res => res.json())
         .then(data => {
 

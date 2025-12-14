@@ -13,7 +13,7 @@ $(document).ready(function () {
         let msg = prompt("Add a message (optional):");
 
         // AJAX SHARE
-        $.post("index.php?action=share_post", {
+        $.post("index-community.php?action=share_post", {
             post_id: postId,
             message: msg
         }, function (response) {

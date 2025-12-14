@@ -33,7 +33,7 @@ $(document).ready(function () {
 
 
       
-        $.post("index.php?action=likes_update_ajax", {
+        $.post("index-community.php?action=likes_update_ajax", {
             post_id: postId,
             liked: likes[postId].liked ? "true" : "false"
         }, function (response) {

@@ -1,0 +1,5 @@
+2025-12-05 22:31:39 | CREATE | id=69334f3bf01333.25130605 | user_id=5 | write_ok=1
+2025-12-05 22:33:58 | LIKES_AJAX | post_id=167 | liked=0 | author_id=null | current_user=NULL | notif_created=0
+2025-12-05 22:33:58 | CREATE | id=69334fc6a23870.05124133 | user_id=5 | write_ok=1
+2025-12-05 22:33:58 | LIKES_AJAX | post_id=167 | liked=1 | author_id=5 | current_user=NULL | notif_created=69334fc6a23870.05124133
+2025-12-05 22:34:05 | LIKES_AJAX | post_id=167 | liked=0 | author_id=null | current_user=NULL | notif_created=0
