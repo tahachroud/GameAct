@@ -443,3 +443,433 @@ body {
     transform: scale(1.15);
     box-shadow: 0 0 25px #ff00e6;
 }
+
+/* ============================================================
+   TOP CONTRIBUTORS (GAMIFIED BADGES)
+============================================================ */
+.contributor-card {
+    background: var(--card);
+    border: 2px solid #ff00e6;
+    padding: 12px;
+    border-radius: 14px;
+    transition: 0.3s;
+    box-shadow:
+        0 0 40px rgba(255, 0, 255, 0.55),
+        0 0 20px rgba(255, 0, 200, 0.35),
+        inset 0 0 20px rgba(255, 0, 255, 0.25);
+}
+
+.contributor-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 130px rgba(255, 0, 255, 0.85),
+        0 0 40px rgba(255, 0, 200, 0.55),
+        inset 0 0 30px rgba(255, 0, 255, 0.45);
+}
+
+.contributor-card h5 { margin: 0 0 3px 0; color: #fff; font-size: 14px; }
+.contributor-card small { color: var(--muted); display: block; margin-bottom: 8px; font-size: 11px; }
+
+.contributor-item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    padding: 6px;
+    margin: 4px 0;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+    border: 1px solid rgba(255,255,255,0.05);
+    transition: 0.25s;
+}
+
+.contributor-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 8px 25px rgba(155,89,255,0.15), inset 0 0 20px rgba(155,89,255,0.05);
+    border-color: rgba(155,89,255,0.4);
+}
+
+.contributor-badge {
+    font-size: 18px;
+    min-width: 24px;
+    text-align: center;
+    display: inline-block;
+    animation: badgeAnimate 1s ease-in-out infinite;
+}
+
+/* Pop animation for all badges */
+@keyframes badgeAnimate {
+    0%, 100% { 
+        transform: scale(1) translateY(0);
+        filter: drop-shadow(0 0 0px rgba(255, 0, 230, 0.5));
+    }
+    50% { 
+        transform: scale(1.25) translateY(-6px);
+        filter: drop-shadow(0 0 12px rgba(255, 0, 230, 0.8));
+    }
+}
+
+.contributor-info { flex: 1; }
+.contributor-name {
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.contributor-stats {
+    display: flex;
+    gap: 6px;
+    margin: 2px 0;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    font-size: 10px;
+    color: var(--muted);
+    background: rgba(155,89,255,0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(155,89,255,0.2);
+}
+
+.contributor-score {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ff00e6;
+    text-shadow: 0 0 8px rgba(255,0,230,0.5);
+    margin-top: 2px;
+}
+
+@media (max-width: 992px) {
+    .contributor-card { display: none; }
+}
+
+/* ============================================================
+   POLL WIDGET
+============================================================ */
+.poll-card {
+    background: var(--card);
+    border: 2px solid #ff00e6;
+    padding: 20px;
+    border-radius: 14px;
+    transition: 0.3s;
+    box-shadow:
+        0 0 40px rgba(255, 0, 255, 0.55),
+        0 0 20px rgba(255, 0, 200, 0.35),
+        inset 0 0 20px rgba(255, 0, 255, 0.25);
+    margin-top: 20px;
+}
+
+.poll-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 130px rgba(255, 0, 255, 0.85),
+        0 0 40px rgba(255, 0, 200, 0.55),
+        inset 0 0 30px rgba(255, 0, 255, 0.45);
+}
+
+.poll-card h5 { margin: 0 0 6px 0; color: #fff; font-size: 16px; }
+.poll-card small { color: var(--muted); display: block; margin-bottom: 10px; }
+
+.poll-question {
+    font-weight: 700;
+    font-size: 14px;
+    color: #fff;
+    line-height: 1.3;
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.poll-option {
+    position: relative;
+}
+
+.poll-vote-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(255, 0, 230, 0.3);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: 0.25s;
+    text-align: left;
+    color: inherit;
+}
+
+.poll-vote-btn:hover {
+    border-color: rgba(255, 0, 230, 0.8);
+    background: rgba(255, 0, 230, 0.05);
+    box-shadow: 0 0 15px rgba(255, 0, 230, 0.3);
+}
+
+.poll-label {
+    font-weight: 600;
+    font-size: 13px;
+    color: #fff;
+    margin-bottom: 6px;
+}
+
+.poll-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 0, 230, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.poll-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #ff00e6, #ff0077);
+    transition: width 0.4s ease;
+    box-shadow: 0 0 10px rgba(255, 0, 230, 0.6);
+}
+
+.poll-stats {
+    font-size: 11px;
+    color: var(--muted);
+}
+
+.poll-footer {
+    text-align: center;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 0, 230, 0.15);
+}
+
+@media (max-width: 992px) {
+    .poll-card { display: none; }
+}
+/* ============================================================
+   TRENDING SIDEBAR (GAMING NEON)
+============================================================ */
+.trending-card {
+    background: var(--card);
+    border: 2px solid #ff00e6;
+    padding: 20px;
+    border-radius: 14px;
+    transition: 0.3s;
+    box-shadow:
+        0 0 40px rgba(255, 0, 255, 0.55),
+        0 0 20px rgba(255, 0, 200, 0.35),
+        inset 0 0 20px rgba(255, 0, 255, 0.25);
+}
+
+.trending-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 130px rgba(255, 0, 255, 0.85),
+        0 0 40px rgba(255, 0, 200, 0.55),
+        inset 0 0 30px rgba(255, 0, 255, 0.45);
+}.trending-card h5 { margin: 0 0 6px 0; color: #fff; font-size:16px; }
+.trending-card small { color: var(--muted); display:block; margin-bottom:10px; }
+
+/* ALL HASHTAG CARDS */
+.trending-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    border-radius: 14px;
+
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #ff00e6;
+
+    box-shadow:
+        0 0 25px rgba(255, 0, 230, 0.45),
+        inset 0 0 18px rgba(255, 0, 230, 0.25);
+
+    transition: 0.3s;
+}
+
+/* hover for ALL */
+.trending-item:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 0 45px rgba(255, 0, 230, 0.75),
+        inset 0 0 25px rgba(255, 0, 230, 0.45);
+}
+
+
+.trending-item + .trending-item { margin-top: 8px; }
+
+.trending-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(155,89,255,0.12), 0 0 40px rgba(255,0,200,0.06);
+  border-color: rgba(255,0,200,0.25);
+}
+
+.trending-thumb {
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: linear-gradient(45deg, rgba(255,0,200,0.12), rgba(0,234,255,0.06));
+  display:flex; align-items:center; justify-content:center;
+}
+.trending-thumb img { width:48px; height:48px; object-fit:cover; border-radius:6px; }
+
+.trending-meta { flex:1; }
+.trending-title { font-weight:700; font-size:13px; color:#fff; line-height:1.1; }
+.trending-sub { font-size:12px; color:var(--muted); margin-top:4px; }
+
+.trend-stats { display:flex; gap:10px; align-items:center; margin-top:6px; }
+.trend-badge { background: linear-gradient(90deg, #ff0077, #9b59ff); padding:4px 8px; border-radius:999px; color:#fff; font-weight:700; font-size:12px; box-shadow:0 0 12px rgba(255,0,180,0.35);} 
+.trend-bubble { font-size:12px; color:var(--muted); }
+
+/* compact responsive tweaks */
+@media (max-width: 992px) {
+  .trending-card { display:none; }
+}
+/* ============================================================
+   COMMENT SECTION — NEON STYLE
+============================================================ */
+.comment-section {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 0, 230, 0.25);
+    animation: fadeIn 0.25s ease;
+}
+
+/* INDIVIDUAL COMMENT */
+.comment-box {
+    background: rgba(255, 0, 255, 0.06);
+    border: 1px solid rgba(255, 0, 230, 0.25);
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    box-shadow:
+        0 0 12px rgba(255, 0, 230, 0.25),
+        inset 0 0 10px rgba(255, 0, 230, 0.15);
+}
+
+.comment-box strong {
+    color: #ff5cff;
+    font-weight: 600;
+}
+
+/* ============================================================
+   COMMENT FORM
+============================================================ */
+.comment-form {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    margin-top: 10px;
+}
+
+/* TEXTAREA */
+.comment-form textarea {
+    flex: 1;
+    resize: none;
+    min-height: 38px;
+    max-height: 120px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 0, 230, 0.3);
+    color: #fff;
+    font-size: 13px;
+    outline: none;
+    transition: 0.25s;
+
+    box-shadow:
+        inset 0 0 12px rgba(255, 0, 230, 0.35);
+}
+
+.comment-form textarea::placeholder {
+    color: #aaa;
+}
+
+.comment-form textarea:focus {
+    border-color: #ff00e6;
+    box-shadow:
+        0 0 18px rgba(255, 0, 230, 0.65),
+        inset 0 0 15px rgba(255, 0, 230, 0.45);
+}
+
+/* ============================================================
+   SEND BUTTON — NEON PILL
+============================================================ */
+.comment-form button {
+    background: linear-gradient(90deg, #ff0077, #9b59ff);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: 0.25s;
+
+    box-shadow:
+        0 0 14px rgba(255, 0, 230, 0.55),
+        0 0 6px rgba(155, 89, 255, 0.45);
+}
+
+.comment-form button:hover {
+    transform: scale(1.1);
+    box-shadow:
+        0 0 28px rgba(255, 0, 230, 0.85),
+        0 0 12px rgba(155, 89, 255, 0.65);
+}
+
+/* REMOVE BOOTSTRAP OVERRIDES */
+.comment-form .btn,
+.comment-form .btn-primary {
+    background: none;
+    border: none;
+    padding: 0;
+}
+/* ===============================
+   NEON PURPLE HASHTAGS
+=============================== */
+
+.hashtag {
+    color: #b000ff; /* neon purple */
+    font-weight: 600;
+    text-decoration: none;
+
+    /* soft neon glow (idle) */
+    text-shadow:
+        0 0 4px rgba(176, 0, 255, 0.6),
+        0 0 8px rgba(176, 0, 255, 0.4);
+
+    transition: 
+        color 0.25s ease,
+        text-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+/* SHINING EFFECT ON HOVER */
+.hashtag:hover {
+    color: #ff7bff;
+
+    text-shadow:
+        0 0 6px rgba(255, 123, 255, 0.9),
+        0 0 12px rgba(255, 0, 255, 0.8),
+        0 0 20px rgba(176, 0, 255, 0.9),
+        0 0 35px rgba(176, 0, 255, 0.7);
+
+    transform: scale(1.05);
+}
+/* EXTRA GLOW FOR #1 HASHTAG */
+.top-hashtag {
+    border-color: #ff7bff;
+    box-shadow:
+        0 0 35px rgba(255, 123, 255, 0.95),
+        0 0 60px rgba(176, 0, 255, 0.85);
+    animation: topGlow 1.5s infinite alternate;
+}
+
+
+@keyframes topGlow {
+    from { box-shadow: 0 0 20px #ff7bff; }
+    to   { box-shadow: 0 0 50px #ff00ff; }
+}
+
+

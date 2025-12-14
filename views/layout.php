@@ -63,7 +63,7 @@
                 <nav class="main-nav">
 
                     <!-- Logo -->
-                    <a href="index.php?action=dashboard" class="logo">
+                    <a href="index-community.php?action=dashboard" class="logo">
                         <img src="public/assets/images/logo.png" alt="GameAct">
                     </a>
 
@@ -77,14 +77,14 @@
 
                     <!-- Navigation Menu -->
                     <ul class="nav">
-                        <li><a href="index.php" target="_blank">Home</a></li>
+                        <li><a href="index-community.php" target="_blank">Home</a></li>
                         <li><a href="#" target="_blank">Games</a></li>
                         <li><a href="#" target="_blank">Events</a></li>
                         <li><a href="#" target="_blank">Tutorials</a></li>
                         <li><a href="#" target="_blank">Shop</a></li>
 
                         <!-- Highlight Community since it's in dashboard -->
-                        <li><a href="index.php?action=community" class="active">Community</a></li>
+                        <li><a href="index-community.php?action=community" class="active">Community</a></li>
 
                         <!-- Admin profile -->
                         <li>

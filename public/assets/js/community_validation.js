@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Apply quick filter
 function applyQuickFilter(filter) {
-    window.location = "index.php?action=search&" + filter;
+    window.location = "index-community.php?action=search&" + filter;
 }
 
 

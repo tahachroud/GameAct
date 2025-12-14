@@ -15,6 +15,7 @@
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 </head>
 
 <body> 
@@ -37,13 +38,13 @@
 
 
             <ul class="nav">
-               <li><a href="index.php?action=search_form">Advanced Search</a></li>
+               <li><a href="index-community.php?action=search_form">Advanced Search</a></li>
               <li><a href="#">Home</a></li>
               <li><a href="#">Games</a></li>
               <li><a href="#">Events</a></li>
               <li><a href="#">Tutorials</a></li>
               <li><a href="#">Shop</a></li>
-              <li class="active"><a href="index.php?action=community">Community</a></li>
+              <li class="active"><a href="index-community.php?action=community">Community</a></li>
               <li><a href="#">Profile <img src="public/assets/images/profile-header.jpg"></a></li>
 
             </ul>
@@ -73,6 +74,7 @@
   <script src="public/assets/js/feed.js"></script>
   <script src="public/assets/js/like.js"></script>
   <script src="public/assets/js/share.js"></script>
+  <script src="public/assets/js/poll.js"></script>
 
   <!-- MUST BE LAST (validation attaches after DOM + feed build) -->
   <script src="public/assets/js/community_validation.js"></script>

@@ -13,35 +13,35 @@ function isActive($page) {
     <ul class="sidebar-menu">
 
         <li>
-            <a href="index.php?action=dashboard" class="<?= isActive('dashboard') ?>">
+            <a href="index-community.php?action=dashboard" class="<?= isActive('dashboard') ?>">
                 <i class="fa-solid fa-chart-line"></i>
                 <span>Dashboard</span>
             </a>
         </li>
 
         <li>
-            <a href="index.php?action=posts" class="<?= isActive('posts') ?>">
+            <a href="index-community.php?action=posts" class="<?= isActive('posts') ?>">
                 <i class="fa-solid fa-newspaper"></i>
                 <span>Posts</span>
             </a>
         </li>
 
         <li>
-            <a href="index.php?action=comments" class="<?= isActive('comments') ?>">
+            <a href="index-community.php?action=comments" class="<?= isActive('comments') ?>">
                 <i class="fa-solid fa-comments"></i>
                 <span>Comments</span>
             </a>
         </li>
 
         <li>
-            <a href="index.php?action=users" class="<?= isActive('users') ?>">
+            <a href="index-community.php?action=users" class="<?= isActive('users') ?>">
                 <i class="fa-solid fa-user"></i>
                 <span>Users</span>
             </a>
         </li>
 
         <li>
-            <a href="index.php?action=community" class="<?= isActive('community') ?>">
+            <a href="index-community.php?action=community" class="<?= isActive('community') ?>">
                 <i class="fa-solid fa-users"></i>
                 <span>Community</span>
 

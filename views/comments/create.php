@@ -10,7 +10,7 @@
     <?php unset($_SESSION['errors']); ?>
 <?php endif; ?>
 
-<form method="POST" action="index.php?action=comments_store">
+<form method="POST" action="index-community.php?action=comments_store">
 
     <label>Post</label>
     <select name="post_id" class="form-control">

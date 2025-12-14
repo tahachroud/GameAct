@@ -1,4 +1,4 @@
-<?php 
+ <?php 
 require_once __DIR__ . '/../models/Comment.php';
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/User.php';
@@ -65,7 +65,7 @@ class CommentController {
         // SI ERREUR → RETOUR VUE
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            header("Location: index.php?action=comments_create");
+            header("Location: index-community.php?action=comments_create");
             exit();
         }
 
@@ -77,7 +77,7 @@ class CommentController {
             "content" => htmlspecialchars($content)
         ]);
 
-        header("Location: index.php?action=comments");
+        header("Location: index-community.php?action=comments");
         exit();
     }
 
@@ -124,7 +124,7 @@ class CommentController {
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            header("Location: index.php?action=comments_edit&id=" . $id);
+            header("Location: index-community.php?action=comments_edit&id=" . $id);
             exit();
         }
 
@@ -132,7 +132,7 @@ class CommentController {
         $commentModel = new Comment($this->db);
         $commentModel->update($id, $post_id, $user_id, htmlspecialchars($content));
 
-        header("Location: index.php?action=comments");
+        header("Location: index-community.php?action=comments");
         exit();
     }
 
@@ -142,7 +142,7 @@ class CommentController {
         $commentModel = new Comment($this->db);
         $commentModel->delete($_GET['id']);
 
-        header("Location: index.php?action=comments");
+        header("Location: index-community.php?action=comments");
         exit();
     }
     // =============================================
@@ -156,13 +156,13 @@ public function createFromFront()
 
     if ($post_id == "" || !is_numeric($post_id)) {
         $_SESSION['errors'] = ["Post ID is missing."];
-        header("Location: index.php?action=community");
+        header("Location: index-community.php?action=community");
         exit();
     }
 
     if (strlen($content) < 3) {
         $_SESSION['errors'] = ["Le commentaire doit contenir au moins 3 caractères."];
-        header("Location: index.php?action=community");
+        header("Location: index-community.php?action=community");
         exit();
     }
 
@@ -173,7 +173,7 @@ public function createFromFront()
         "content" => htmlspecialchars($content)
     ]);
 
-    header("Location: index.php?action=community");
+    header("Location: index-community.php?action=community");
     exit();
 }
 

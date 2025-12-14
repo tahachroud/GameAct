@@ -10,7 +10,7 @@
     <?php unset($_SESSION['errors']); ?>
 <?php endif; ?>
 
-<form action="index.php?action=posts_update" method="POST" enctype="multipart/form-data">
+<form action="index-community.php?action=posts_update" method="POST" enctype="multipart/form-data">
 
     <input type="hidden" name="id" value="<?= $post['id'] ?>">
 
@@ -26,7 +26,6 @@
     <label class="mt-2">Content</label>
     <textarea name="content" class="form-control"><?= htmlspecialchars($post['content']) ?></textarea>
 
-    <label class="mt-2">Image</label><br>
 
     <label class="mt-2">Images</label><br>
 

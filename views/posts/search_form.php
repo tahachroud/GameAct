@@ -66,7 +66,7 @@
     <div class="search-panel">
         <h2>🔍 Advanced Search</h2>
 
-        <form action="index.php" method="GET">
+        <form action="index-community.php" method="GET">
 
             <input type="hidden" name="action" value="search">
 

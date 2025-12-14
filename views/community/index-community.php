@@ -8,7 +8,7 @@ $shareModel = new Share();
 <div class="container mt-4">
     <div class="card composer mb-5">
 
-        <form id="composerForm" action="index.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
+        <form id="composerForm" action="index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
 
             <div class="composer-top d-flex">
                 <img class="avatar" src="public/assets/images/avatar-01.jpg" alt="">
@@ -54,9 +54,35 @@ $shareModel = new Share();
 <div class="container feed-container mb-5">
     <div class="row">
 
-        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+            <?php if (!empty($topContributors)): ?>
+                <?php include __DIR__ . '/top_contributors.php'; ?>
+            <?php else: ?>
+                <div class="card p-3">
+                    <strong>Top Contributors</strong>
+                    <div class="text-muted">No contributors yet</div>
+                </div>
+            <?php endif; ?>
+
+            <?php $activePoll = $GLOBALS['activePoll'] ?? null; ?>
+            <?php if (!empty($activePoll)): ?>
+                <?php include __DIR__ . '/poll.php'; ?>
+            <?php endif; ?>
+        </div>
 
         <div class="col-lg-6">
+            <?php if (!empty($selectedTag)): ?>
+    <div class="trending-card mb-4">
+        <h5>
+            Showing posts for 
+            <span class="hashtag">#<?= htmlspecialchars($selectedTag) ?></span>
+        </h5>
+        <small>
+            <?= count($feed) ?> post(s) found
+        </small>
+    </div>
+<?php endif; ?>
+
 
             <div id="feedList">
 
@@ -83,7 +109,15 @@ $shareModel = new Share();
                             </div>
 
                             <!-- Content -->
-                            <p><?= nl2br(htmlspecialchars($item['content'])) ?></p>
+<?php
+$formatted = htmlspecialchars($item['content']);
+$formatted = preg_replace(
+    '/#([a-zA-Z0-9_]+)/',
+    '<a href="index-community.php?action=community&tag=$1" class="hashtag">#$1</a>',
+    $formatted
+);
+?>
+<p><?= nl2br($formatted) ?></p>
 
           <?php 
 if (!empty($item['images'])) {
@@ -140,7 +174,7 @@ if (!empty($item['images'])) {
                                 <?php endforeach; ?>
 
                                 <!-- Comment Form -->
-                                <form method="POST" action="index.php?action=comments_store_front" class="comment-form mt-2">
+                                <form method="POST" action="index-community.php?action=comments_store_front" class="comment-form mt-2">
                                     <input type="hidden" name="post_id" value="<?= $item['id'] ?>">
                                     <textarea name="content" class="form-control" rows="1" placeholder="Write a comment..."></textarea>
                                     <button class="btn btn-sm btn-primary mt-1">Send</button>
@@ -235,7 +269,7 @@ endif;
                                         </div>
                                     <?php endforeach; ?>
 
-                                    <form method="POST" action="index.php?action=comments_store_front" class="comment-form mt-2">
+                                    <form method="POST" action="index-community.php?action=comments_store_front" class="comment-form mt-2">
                                         <input type="hidden" name="post_id" value="<?= $original['id'] ?>">
                                         <textarea name="content" class="form-control" rows="1" placeholder="Write a comment..."></textarea>
                                         <button class="btn btn-sm btn-primary mt-1">Send</button>
@@ -255,7 +289,17 @@ endif;
 
         </div>
 
-        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+<?php if (!empty($topHashtags)): ?>
+        <?php include __DIR__ . '/trending_hashtags.php'; ?>
+    <?php endif; ?>
+    <?php if (!empty($trending)): ?>
+        <?php include __DIR__ . '/trending.php'; ?>
+    <?php endif; ?>
+
+    
+</div>
+
 
     </div>
 <script>

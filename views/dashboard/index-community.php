@@ -52,8 +52,8 @@
                 <td><?= $p['created_at'] ?></td>
 
                 <td>
-                    <a href="index.php?action=posts_edit&id=<?= $p['id'] ?>" class="btn-edit btn btn-sm">Edit</a>
-                    <a href="index.php?action=posts_delete&id=<?= $p['id'] ?>" class="btn-delete btn btn-sm"
+                    <a href="index-community.php?action=posts_edit&id=<?= $p['id'] ?>" class="btn-edit btn btn-sm">Edit</a>
+                    <a href="index-community.php?action=posts_delete&id=<?= $p['id'] ?>" class="btn-delete btn btn-sm"
                        onclick="return confirm('Delete post?');">Delete</a>
                 </td>
             </tr>

@@ -55,7 +55,7 @@ class UserController {
             'avatar'   => $avatar
         ]);
 
-        header("Location: index.php?action=users");
+        header("Location: index-community.php?action=users");
         exit();
     }
 
@@ -95,7 +95,7 @@ class UserController {
             'avatar'   => $avatar
         ]);
 
-        header("Location: index.php?action=users");
+        header("Location: index-community.php?action=users");
         exit();
     }
 
@@ -105,7 +105,7 @@ class UserController {
         $user = new User($this->db);
         $user->delete($_GET['id']);
 
-        header("Location: index.php?action=users");
+        header("Location: index-community.php?action=users");
         exit();
     }
 }

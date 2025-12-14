@@ -10,7 +10,7 @@
     <?php unset($_SESSION['errors']); ?>
 <?php endif; ?>
 
-<form action="index.php?action=posts_store" method="POST" enctype="multipart/form-data">
+<form action="index-community.php?action=posts_store" method="POST" enctype="multipart/form-data">
 
     <label>User</label>
     <select name="user_id" class="form-control">

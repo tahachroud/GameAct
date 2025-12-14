@@ -10,7 +10,7 @@
     <?php unset($_SESSION['errors']); ?>
 <?php endif; ?>
 
-<form action="index.php?action=comments_update" method="POST">
+<form action="index-community.php?action=comments_update" method="POST">
 
     <!-- HIDDEN ID -->
     <input type="hidden" name="id" value="<?= $comment['id'] ?>">

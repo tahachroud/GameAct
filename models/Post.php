@@ -193,6 +193,25 @@ public function search($criteria)
 
     return $posts;
 }
+// ===================================================
+// GET POSTS BY HASHTAG
+// ===================================================
+public function getByHashtag(string $tag)
+{
+    $sql = "
+        SELECT posts.*, users.username
+        FROM posts
+        JOIN users ON users.id = posts.user_id
+        WHERE posts.content LIKE ?
+        ORDER BY posts.created_at DESC
+    ";
+
+    $stmt = $this->db->prepare($sql);
+    $stmt->execute(['%#' . $tag . '%']);
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
 
 }
 

@@ -76,7 +76,7 @@ foreach ($latestPosts as &$post) {
         // LOAD VIEW
         // ======================================================
         ob_start();
-        include __DIR__ . '/../views/dashboard/index.php';
+        include __DIR__ . '/../views/dashboard/index-community.php';
         $content = ob_get_clean();
 
         include __DIR__ . '/../views/layout.php';

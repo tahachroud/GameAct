@@ -10,7 +10,7 @@ $(document).ready(function () {
         setTimeout(() => btn.css("transform", "scale(1)"), 120);
 
         // 1) Update share counter
-        $.post("index.php?action=share_update_ajax", {
+        $.post("index-community.php?action=share_update_ajax", {
             post_id: postId
         }, function (response) {
             let res = JSON.parse(response);
@@ -23,7 +23,7 @@ $(document).ready(function () {
         setTimeout(() => {
             let msg = prompt("Add a message to your share (optional):");
 
-            $.post("index.php?action=share_post", {
+            $.post("index-community.php?action=share_post", {
                 post_id: postId,
                 message: msg
             }, function (response) {

@@ -1,6 +1,7 @@
 <?php 
 require_once __DIR__ . '/../models/Post.php';
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../helpers/HashtagHelper.php';
 
 class PostController {
 
@@ -49,7 +50,7 @@ class PostController {
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            header("Location: index.php?action=posts_create");
+            header("Location: index-community.php?action=posts_create");
             exit();
         }
 
@@ -68,11 +69,20 @@ if (!empty($_FILES['images']['name'][0])) {
     }
 }
 
-$postModel->create($user_id, htmlspecialchars($content), json_encode($imagesArray));
+// EXTRACT & STORE HASHTAGS
+$hashtags = HashtagHelper::extract($content);
+HashtagHelper::store($hashtags);
+$postModel = new Post($this->db);
 
-        $postModel = new Post($this->db);
+// SAVE POST (hashtags remain in content only)
+$postModel->create(
+    $user_id,
+    htmlspecialchars($content),
+    json_encode($imagesArray)
+);
 
-        header("Location: index.php?action=posts");
+
+        header("Location: index-community.php?action=posts");
         exit();
     }
 
@@ -90,7 +100,7 @@ $postModel->create($user_id, htmlspecialchars($content), json_encode($imagesArra
 
         if (!empty($errors)) {
             $_SESSION['errors'] = $errors;
-            header("Location: index.php?action=posts_edit&id=" . $id);
+            header("Location: index-community.php?action=posts_edit&id=" . $id);
             exit();
         }
 
@@ -128,7 +138,7 @@ $postModel->update(
 );
 
 
-        header("Location: index.php?action=posts");
+        header("Location: index-community.php?action=posts");
         exit();
     }
 
@@ -138,7 +148,7 @@ $postModel->update(
         $postModel = new Post($this->db);
         $postModel->delete($_GET['id']);
 
-        header("Location: index.php?action=posts");
+        header("Location: index-community.php?action=posts");
         exit();
     }
 
@@ -159,19 +169,19 @@ $postModel->update(
 
         if (empty($content)) {
             $_SESSION['errors'] = ["Le contenu ne peut pas être vide."];
-            header("Location: index.php?action=community");
+            header("Location: index-community.php?action=community");
             exit();
         }
 
         if (strlen($content) < 3) {
             $_SESSION['errors'] = ["Le contenu doit contenir au moins 3 caractères."];
-            header("Location: index.php?action=community");
+            header("Location: index-community.php?action=community");
             exit();
         }
 
         if (strlen($content) > 500) {
             $_SESSION['errors'] = ["Le contenu ne doit pas dépasser 500 caractères."];
-            header("Location: index.php?action=community");
+            header("Location: index-community.php?action=community");
             exit();
         }
 
@@ -206,9 +216,20 @@ if (!empty($_FILES['pdf']['name'])) {
 
         // INSERT POST
         $postModel = new Post($this->db);
-        $postModel->create($user_id, htmlspecialchars($content), json_encode($imagesArray), $pdf, $link);
+// EXTRACT & STORE HASHTAGS
+$hashtags = HashtagHelper::extract($content);
+HashtagHelper::store($hashtags);
 
-        header("Location: index.php?action=community");
+// INSERT POST
+$postModel->create(
+    $user_id,
+    htmlspecialchars($content),
+    json_encode($imagesArray),
+    $pdf,
+    $link
+);
+
+        header("Location: index-community.php?action=community");
         exit();
     }
     public function search()

@@ -2,7 +2,7 @@
 
 <h2>Posts List</h2>
 
-<a href="index.php?action=posts_create" class="btn-gaming btn-create-g">+ Add Post</a>
+<a href="index-community.php?action=posts_create" class="btn-gaming btn-create-g">+ Add Post</a>
 
 <table class="admin-table">
     <thead>
@@ -34,9 +34,9 @@ if ($imgs && count($imgs) > 0): ?>
             </td>
 
             <td>
-               <a href="index.php?action=posts_edit&id=<?= $p['id'] ?>" class="btn-gaming sm btn-edit-g">Edit</a>
+               <a href="index-community.php?action=posts_edit&id=<?= $p['id'] ?>" class="btn-gaming sm btn-edit-g">Edit</a>
 
-<a href="index.php?action=posts_delete&id=<?= $p['id'] ?>" 
+<a href="index-community.php?action=posts_delete&id=<?= $p['id'] ?>" 
    class="btn-gaming sm btn-delete-g"
    onclick="return confirm('Delete post?');">Delete</a>
 

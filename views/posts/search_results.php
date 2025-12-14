@@ -75,7 +75,7 @@
 
 <div class="container results-container">
 
-    <a href="index.php?action=search_form" class="back-btn">⬅ Back to Search</a>
+    <a href="index-community.php?action=search_form" class="back-btn">⬅ Back to Search</a>
 
     <h2 class="title-search">Search Results</h2>
 

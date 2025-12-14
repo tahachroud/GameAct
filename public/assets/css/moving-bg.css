@@ -9,23 +9,23 @@
   z-index: -9999; /* MUST BE VERY LOW */
   pointer-events: none; /* don't block interactions */
 
-  /* Neon purple + deep dark gradient */
+  /* Darker neon purple gradient */
   background: linear-gradient(
       120deg,
-      #0a0014,
+      #050008,
+      #0d001a,
       #1a0033,
-      #3d007e,
-      #7a00ff,
-      #b300ff,
-      #7a00ff,
-      #3d007e,
-      #1a0033
+      #2d0052,
+      #8b3fc0,
+      #2d0052,
+      #1a0033,
+      #0d001a
   );
 
   background-size: 600% 600%;
 
   /* Smooth & slow animation */
-  animation: bgMove 8s ease-in-out infinite;
+  animation: bgMove 5s ease-in-out infinite;
 }
 
 @keyframes bgMove {

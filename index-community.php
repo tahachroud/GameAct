@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/config/Database.php';
+require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/controllers/DashboardController.php';
 
 
@@ -12,7 +12,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$db = (new Database())->getConnection();
+$db = (new config())->getConnection();
 
 $action = $_GET['action'] ?? 'dashboard';
 
@@ -122,6 +122,11 @@ switch ($action) {
     case 'share_post':
         (new CommunityController($db))->sharePost();
         exit();
+
+    case 'poll_vote_ajax':
+        (new CommunityController($db))->voteOnPollAjax();
+        exit();
+
     case 'search':
         require_once 'controllers/PostController.php';
         $controller = new PostController($db);
