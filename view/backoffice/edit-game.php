@@ -88,30 +88,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $updatedGame->setTrailerPath($trailerPath);
 
-        $zipPath = $game['zip_file_path'];
-        if (isset($_FILES['zip_file']) && $_FILES['zip_file']['error'] === UPLOAD_ERR_OK) {
-            if ($_FILES['zip_file']['type'] !== 'application/zip' && 
-                $_FILES['zip_file']['type'] !== 'application/x-zip-compressed') {
-                throw new Exception('Type de fichier non autorisé. Utilisez un fichier ZIP.');
+        // Download link (optional) -- store a URL to an external download/page
+        $downloadLink = trim($_POST['download_link'] ?? $game['download_link'] ?? '');
+        if ($downloadLink !== '') {
+            if (!filter_var($downloadLink, FILTER_VALIDATE_URL)) {
+                throw new Exception('Le lien de téléchargement n\'est pas une URL valide.');
             }
-            
-            $uploadDir = __DIR__ . '/../assets/games/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-
-            if (!empty($game['zip_file_path']) && file_exists(__DIR__ . '/../' . $game['zip_file_path'])) {
-                unlink(__DIR__ . '/../' . $game['zip_file_path']);
-            }
-            
-            $filename = 'game_' . uniqid() . '.zip';
-            $destination = $uploadDir . $filename;
-            
-            if (move_uploaded_file($_FILES['zip_file']['tmp_name'], $destination)) {
-                $zipPath = 'assets/games/' . $filename;
-            }
+            $updatedGame->setDownloadLink($downloadLink);
+        } else {
+            $updatedGame->setDownloadLink('');
         }
-        $updatedGame->setZipFilePath($zipPath);
 
         $success = $gameController->updateGame($updatedGame);
         
@@ -382,23 +368,23 @@ $categories = [
           </div>
         </div>
 
-        <!-- ZIP -->
+        <!-- Download Link -->
         <div class="mb-4">
-          <label class="form-label">Installation Folder (ZIP) - Optional</label>
-          <?php if (!empty($game['zip_file_path'])): ?>
+          <label class="form-label">Download Link (URL) - Optional</label>
+          <?php if (!empty($game['download_link'])): ?>
             <div class="current-file">
-              <i class="fa fa-check-circle"></i> Current ZIP: <?= basename($game['zip_file_path']) ?>
+              <i class="fa fa-check-circle"></i> Current link: <?= htmlspecialchars($game['download_link']) ?>
             </div>
           <?php else: ?>
             <div class="current-file" style="color: #aaa;">
-              <i class="fa fa-info-circle"></i> No ZIP file URL set yet
+              <i class="fa fa-info-circle"></i> No download link set yet
             </div>
           <?php endif; ?>
-          <input type="url" class="form-control mt-2" name="zip_file_url" 
-                 placeholder="Enter ZIP file URL (e.g., https://example.com/game.zip)"
-                 value="<?= htmlspecialchars($game['zip_file_path'] ?? '') ?>">
+          <input type="url" class="form-control mt-2" name="download_link" 
+                 placeholder="https://example.com/download-or-page"
+                 value="<?= htmlspecialchars($game['download_link'] ?? '') ?>">
           <div class="file-info">
-            <i class="fa fa-info-circle"></i> Leave empty to keep current ZIP | Enter direct URL to ZIP file
+            <i class="fa fa-info-circle"></i> Enter a complete URL (https://...) or leave empty
           </div>
         </div>
 
@@ -428,7 +414,8 @@ $categories = [
             <div class="col-md-6">
               <label class="form-label">Price ($) *</label>
               <input type="number" step="0.01" class="form-control" id="gamePrice" name="price" 
-                     value="<?= number_format($game['price'], 2, '.', '') ?>" min="0.99">
+                     value="<?= number_format($game['price'], 2, '.', '') ?>" 
+                     <?= !$game['is_free'] ? 'min="0.99" required' : '' ?>>
             </div>
           </div>
         </div>
@@ -500,12 +487,12 @@ $categories = [
     // Gestion prix gratuit/payant
     $('#free').change(function() {
       $('#paidOptions').hide();
-      $('#gamePrice').prop('required', false);
+      $('#gamePrice').prop('required', false).removeAttr('min');
     });
     
     $('#paid').change(function() {
       $('#paidOptions').show();
-      $('#gamePrice').prop('required', true);
+      $('#gamePrice').prop('required', true).attr('min', '0.99');
     });
   </script>
 

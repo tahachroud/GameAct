@@ -324,7 +324,7 @@ try {
   </footer>
 
   <script src="../vendor/jquery/jquery.min.js"></script>
-  <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="../vendor/bootstrap/js/bootstrap.min.js"></script>
   <script>
     // Empêcher le retour en arrière après confirmation
     if (window.history.replaceState) {
