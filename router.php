@@ -1,16 +1,15 @@
 <?php
 
 require "./config/database.php";
-require "./controllers/TutorialController.php";
-require "./controllers/FeedbackController.php";
-require "./controllers/AdminController.php";
+require "./controller/TutorialController.php";
+require "./controller/FeedbackController.php";
+require "./controller/AdminController.php";
 
 $db = (new Database())->connect();
 $controller = new TutorialController($db);
 
 $action = $_GET["action"] ?? "index";
 
-// 🔥 ROUTES PRINCIPALES
 switch ($action) {
 
     case "index":
@@ -38,7 +37,7 @@ switch ($action) {
         exit;
 }
 
-// 🔥 ROUTES FEEDBACK
+
 $fb = new FeedbackController();
 
 if ($action == "feedbackStore") {
@@ -66,7 +65,7 @@ if ($action == "dislikeFeedback") {
     exit;
 }
 
-// 🔥 ROUTE ADMIN
+
 if ($action == "dashboard") {
     (new AdminController())->dashboard();
     exit;

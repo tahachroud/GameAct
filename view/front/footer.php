@@ -1,4 +1,4 @@
-    </div> <!-- end container -->
+    </div> 
 
     <footer style="
         margin-top: 50px;

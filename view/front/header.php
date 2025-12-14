@@ -1,13 +1,13 @@
 <header class="gaming-header">
     <div class="container-header">
 
-        <!-- LOGO -->
+       
         <div class="logo">
-            <span class="icon">🎮</span> 
+            <span class="icon"></span> 
             <span class="text">Tutoriels Gaming</span>
         </div>
 
-        <!-- NAVIGATION -->
+        
         <nav id="navMenu">
             <a href="router.php" class="nav-link">Accueil</a>
             <a href="router.php?action=index" class="nav-link">Tutoriels</a>
@@ -15,7 +15,7 @@
             <a href="#" class="nav-link">À propos</a>
         </nav>
 
-        <!-- MENU MOBILE -->
+        
         <div class="burger" onclick="toggleMenu()">
             <span></span>
             <span></span>
@@ -26,7 +26,7 @@
 </header>
 
 <style>
-/* 🔥 HEADER NEON GAMING */
+
 .gaming-header {
     width: 100%;
     padding: 15px 0;
@@ -39,7 +39,7 @@
     z-index: 900;
 }
 
-/* CONTENU DU HEADER */
+
 .container-header {
     width: 90%;
     margin: auto;
@@ -48,7 +48,7 @@
     align-items: center;
 }
 
-/* 🕹️ LOGO */
+
 .logo {
     display: flex;
     align-items: center;
@@ -63,7 +63,7 @@
     font-size: 34px;
 }
 
-/* 🔗 NAVIGATION */
+
 nav {
     display: flex;
     gap: 35px;
@@ -78,13 +78,11 @@ nav {
     position: relative;
 }
 
-/* Effet neon hover */
 .nav-link:hover {
     color: #ff1188;
     text-shadow: 0 0 8px #ff1188;
 }
 
-/* Burger menu (mobile) */
 .burger {
     display: none;
     flex-direction: column;
@@ -99,7 +97,6 @@ nav {
     transition: 0.3s;
 }
 
-/* 📱 Version mobile */
 @media (max-width: 900px) {
 
     nav {

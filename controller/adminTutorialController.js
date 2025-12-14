@@ -1,4 +1,4 @@
-// controllers/adminTutorialController.js
+
 console.log("AdminTutorialController chargé ✅");
 
 document.addEventListener("DOMContentLoaded", () => {

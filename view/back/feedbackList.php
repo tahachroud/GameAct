@@ -1,4 +1,4 @@
-<?php require_once "./views/back/header.php"; ?>
+<?php require_once "./view/back/header.php"; ?>
 
 <h2 class="section-title">Gestion des Feedbacks</h2>
 
@@ -30,4 +30,4 @@
 
 </table>
 
-<?php require_once "./views/back/footer.php"; ?>
+<?php require_once "./view/back/footer.php"; ?>

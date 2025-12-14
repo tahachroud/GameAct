@@ -1,5 +1,5 @@
-// controllers/tutorialController.js
-import TutorialModel from "../models/tutorialModel.js";
+
+import TutorialModel from "../model/tutorialModel.js";
 
 const TutorialController = (function() {
   async function list() {

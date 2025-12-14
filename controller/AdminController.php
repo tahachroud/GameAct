@@ -1,6 +1,6 @@
 <?php
-require_once "./models/Tutorial.php";
-require_once "./models/Feedback.php";
+require_once "./model/Tutorial.php";
+require_once "./model/Feedback.php";
 
 class AdminController {
 
@@ -12,6 +12,6 @@ class AdminController {
         $totalFeedbacks = $feedback->countAll();
         $totalLikes = $feedback->sumLikes();
 
-        require "./views/back/dashboard.php";
+        require "./view/back/dashboard.php";
     }
 }

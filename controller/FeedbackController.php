@@ -1,7 +1,7 @@
 <?php
 
-require_once __DIR__ . "/../models/Feedback.php";
-require_once __DIR__ . "/../models/Tutorial.php";
+require_once __DIR__ . "/../model/Feedback.php";
+require_once __DIR__ . "/../model/Tutorial.php";
 require_once __DIR__ . "/../config/database.php";
 
 class FeedbackController
@@ -69,7 +69,7 @@ class FeedbackController
         $fb = new Feedback($this->db);
         $data = $fb->getAllWithTutorial();
 
-        include "./views/back/feedbackList.php";
+        include(__DIR__. '/../view/back/feedbackList.php');
     }
 
     public function delete($id)
@@ -85,19 +85,19 @@ class FeedbackController
 {
     $fb = new Feedback($this->db);
 
-    // Récupérer le feedback pour connaître le tutoriel
+    
     $feedback = $fb->getById($id);
 
     if ($feedback) {
         $tutorialId = $feedback["tutorial_id"];
         $fb->addLike($id);
 
-        // Retourner sur la page du tutoriel (FRONT)
+        
         header("Location: router.php?action=show&id=" . $tutorialId);
         exit;
     }
 
-    // Si erreur → retour admin
+    
     header("Location: router.php?action=adminFeedback");
     exit;
 }

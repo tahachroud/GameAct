@@ -4,7 +4,7 @@ const TutorialModel = (function() {
 
   // 🔹 Récupère tous les tutoriels depuis le fichier JSON
   async function getAll() {
-    const response = await fetch("../../data/tutorials.json");
+    const response = await fetch("../../data/tutorial.json");
     return await response.json();
   }
 

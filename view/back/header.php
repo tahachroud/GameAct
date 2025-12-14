@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>Administration</title>
 
-    <link rel="stylesheet" href="../../public/assets/bootstrap.min.css">
-    <link rel="stylesheet" href="../../public/assets/templatemo-cyborg-gaming.css">
+    <link rel="stylesheet" href="../../public/asset/bootstrap.min.css">
+    <link rel="stylesheet" href="../../public/asset/templatemo-cyborg-gaming.css">
 
     <style>
         body { background:#1f2122; color:white; }

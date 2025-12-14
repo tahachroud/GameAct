@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Tutoriels Gaming</title>
 
-  <!-- RÉPERTOIRES CORRIGÉS -->
+ 
   <link rel="stylesheet" href="public/assets/templatemo-cyborg-gaming.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
@@ -77,7 +77,7 @@
 </head>
 
 <body>
-<?php include "./views/front/header.php"; ?>   <!-- HEADER -->
+<?php include "./view/front/header.php"; ?>   
 
 <h1>Tutoriels Gaming – Explore & Apprends</h1>
 
@@ -112,7 +112,7 @@
     </div>
 </div>
 
-<?php include "./views/front/footer.php"; ?>   <!-- FOOTER -->
+<?php include "./view/front/footer.php"; ?>   
 
 </body>
 </html>

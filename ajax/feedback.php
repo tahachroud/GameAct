@@ -1,6 +1,6 @@
 <?php
 require_once "../config/database.php";
-require_once "../models/Feedback.php";
+require_once "../model/Feedback.php";
 
 header("Content-Type: application/json");
 

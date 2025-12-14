@@ -1,6 +1,6 @@
 <?php
-require_once "./models/Tutorial.php";
-require_once "./models/Feedback.php";
+require_once "./model/Tutorial.php";
+require_once "./model/Feedback.php";
 require_once "./config/database.php";
 
 $db = (new Database())->connect();

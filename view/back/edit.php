@@ -2,50 +2,42 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Ajouter un tutoriel</title>
+  <title>Modifier tutoriel</title>
 
-  <!-- CHEMINS CSS CORRECTS -->
+  
   <link rel="stylesheet" href="../../public/assets/templatemo-cyborg-gaming.css">
-  <link rel="stylesheet" href="../../public/assets/owl.css">
   <link rel="stylesheet" href="../../public/assets/animate.css">
+  <link rel="stylesheet" href="../../public/assets/owl.css">
   <link rel="stylesheet" href="../../public/assets/fontawesome.css">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
-<body style="background:#1f2122;" class="text-light p-4">
+<body style="background:#1f2122;" class="p-4 text-light">
 
-<div class="container">
-  <h2 class="mb-4">Ajouter un tutoriel</h2>
+  <h2 class="mb-4">Modifier le tutoriel</h2>
 
   <form method="POST" onsubmit="return validate()">
 
-    <div class="mb-3">
-      <label>Titre</label>
-      <input type="text" id="title" name="title" class="form-control">
-    </div>
+    <label>Titre</label>
+    <input type="text" name="title" id="title" class="form-control" value="<?= $item['title'] ?>">
 
-    <div class="mb-3">
-      <label>URL vidéo (YouTube)</label>
-      <input type="text" id="videoUrl" name="videoUrl" class="form-control">
-    </div>
+    <label class="mt-3">URL vidéo (YouTube)</label>
+    <input type="text" name="videoUrl" id="videoUrl" class="form-control" value="<?= $item['videoUrl'] ?>">
 
-    <div class="mb-3">
-      <label>Catégorie</label>
-      <input type="text" id="category" name="category" class="form-control">
-    </div>
+    <label class="mt-3">Catégorie</label>
+    <input type="text" name="category" id="category" class="form-control" value="<?= $item['category'] ?>">
 
-    <div class="mb-3">
-      <label>Description</label>
-      <textarea id="content" name="content" class="form-control"></textarea>
-    </div>
+    <label class="mt-3">Description</label>
+    <textarea name="content" id="content" class="form-control"><?= $item['content'] ?></textarea>
 
-    <button class="btn btn-primary">Ajouter</button>
+    <button class="btn btn-success mt-4">Sauvegarder</button>
+    <a href="router.php?action=adminList" class="btn btn-secondary mt-4">Annuler</a>
+
   </form>
-</div>
 
 
-<!-- VALIDATION JS -->
+
 <script>
 function validate() {
 
@@ -54,14 +46,14 @@ function validate() {
     const category = document.getElementById("category");
     const content = document.getElementById("content");
 
-    // Vérification titre
+    
     if (title.value.trim().length < 3) {
         alert("Le titre doit contenir au moins 3 caractères.");
         title.focus();
         return false;
     }
 
-    // Vérification URL vidéo
+    
     if (videoUrl.value.trim() === "") {
         alert("Veuillez entrer une URL vidéo.");
         videoUrl.focus();
@@ -77,21 +69,19 @@ function validate() {
         return false;
     }
 
-    // Vérification catégorie
     if (category.value.trim() === "") {
         alert("Veuillez entrer une catégorie.");
         category.focus();
         return false;
     }
 
-    // Vérification description
     if (content.value.trim().length < 10) {
         alert("La description doit contenir au moins 10 caractères.");
         content.focus();
         return false;
     }
 
-    return true; // OK → laisser envoyer le formulaire
+    return true; 
 }
 </script>
 
