@@ -14,7 +14,14 @@ try {
     $summary = $gameController->getCartSummary($userId, $promoCode);
 
 } catch (Exception $e) {
-    die('<div style="background:#16213e; color:#fff; padding:40px; font-family:Arial; border-radius:10px; margin:50px auto; max-width:800px;">\n        <h2 style="color:#ec6090;">❌ Erreur lors du chargement du checkout</h2>\n        <p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>\n        <p><strong>Fichier:</strong> ' . htmlspecialchars($e->getFile()) . '</p>\n        <p><strong>Ligne:</strong> ' . $e->getLine() . '</p>\n        <hr>\n        <p><a href="shop.php" style="color:#ec6090;">← Retour au Shop</a></p>\n    </div>');
+    die('<div style="background:#16213e; color:#fff; padding:40px; font-family:Arial; border-radius:10px; margin:50px auto; max-width:800px;">
+        <h2 style="color:#ec6090;">⚠ Erreur lors du chargement du checkout</h2>
+        <p><strong>Message:</strong> ' . htmlspecialchars($e->getMessage()) . '</p>
+        <p><strong>Fichier:</strong> ' . htmlspecialchars($e->getFile()) . '</p>
+        <p><strong>Ligne:</strong> ' . $e->getLine() . '</p>
+        <hr>
+        <p><a href="shop.php" style="color:#ec6090;">← Retour au Shop</a></p>
+    </div>');
 }
 ?>
 <!DOCTYPE html>
@@ -33,8 +40,19 @@ try {
     .payment-method { background:#1a1a2e; padding:15px; border-radius:10px; margin-bottom:15px; }
     .pay-btn { background:#28a745; color:#fff; border:none; padding:12px 20px; border-radius:8px; font-weight:700; }
     .pay-btn:hover { background:#218838; }
+    .pay-btn:disabled { background:#666; cursor:not-allowed; }
     .form-section { margin-bottom:20px; }
     .cart-list { background:#1a1a2e; padding:15px; border-radius:10px; }
+    #bankTransferFields { background:#16213e; padding:15px; border-radius:8px; margin-top:15px; border:2px solid #ec6090; }
+    .pdf-preview { background:#1a1a2e; padding:10px; border-radius:8px; margin-top:10px; display:none; }
+    .pdf-preview.show { display:block; }
+    .pdf-info { color:#28a745; font-size:0.9rem; margin-top:5px; }
+    .upload-label { background:#ec6090; color:#fff; padding:10px 20px; border-radius:8px; cursor:pointer; display:inline-block; transition:0.3s; }
+    .upload-label:hover { background:#d14e7a; }
+    .verification-status { padding:10px; border-radius:8px; margin-top:10px; display:none; }
+    .verification-status.success { background:#28a745; color:#fff; display:block; }
+    .verification-status.error { background:#dc3545; color:#fff; display:block; }
+    .verification-status.verifying { background:#ffc107; color:#000; display:block; }
   </style>
 </head>
 <body>
@@ -79,7 +97,6 @@ try {
   <script src="../vendor/jquery/jquery.min.js"></script>
   <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Pass PHP data to JavaScript
     const cartData = <?= json_encode($cartItems, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT) ?> || [];
     const summary = <?= json_encode($summary, JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_AMP|JSON_HEX_QUOT) ?> || {};
 
@@ -94,7 +111,6 @@ try {
       return el;
     }
 
-    // Simple country -> phone regex and example placeholders
     const countries = [
       { code: 'TN', name: 'Tunisia', dial: '+216', placeholder: '+216 99 999 999', regex: /^(?:\+216)?\s?\d{2}\s?\d{3}\s?\d{3}$/ },
       { code: 'FR', name: 'France', dial: '+33', placeholder: '+33 6 12 34 56 78', regex: /^(?:\+33)?\s?\d{1}\s?\d{2}\s?\d{2}\s?\d{2}\s?\d{2}$/ },
@@ -104,49 +120,35 @@ try {
 
     function luhnCheck(val) {
       const s = val.replace(/\D/g, '');
-      let sum = 0;
-      let alt = false;
+      let sum = 0, alt = false;
       for (let i = s.length - 1; i >= 0; i--) {
         let n = parseInt(s.charAt(i), 10);
         if (alt) { n *= 2; if (n > 9) n -= 9; }
-        sum += n;
-        alt = !alt;
+        sum += n; alt = !alt;
       }
       return (sum % 10) === 0;
     }
 
-    function validateName(value) {
-      return /^[A-Za-z\u00C0-\u017F' -]+$/.test(value.trim());
-    }
-
-    function validateEmail(value) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
-    }
-
-    function getCountryData(code) {
-      return countries.find(c => c.code === code) || countries[0];
-    }
-
-    function validatePhone(value, countryCode) {
-      const c = getCountryData(countryCode);
-      return c.regex.test(value.trim());
-    }
-
+    function validateName(value) { return /^[A-Za-z\u00C0-\u017F' -]+$/.test(value.trim()); }
+    function validateEmail(value) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim()); }
+    function getCountryData(code) { return countries.find(c => c.code === code) || countries[0]; }
+    function validatePhone(value, countryCode) { return getCountryData(countryCode).regex.test(value.trim()); }
     function validateCardNumber(value) {
       const digits = value.replace(/\D/g, '');
       if (digits.length < 12 || digits.length > 19) return false;
       return luhnCheck(digits);
     }
 
+    let uploadedPdfFile = null;
+    let pdfVerified = false;
+
     function buildCheckoutApp() {
       const app = document.getElementById('checkoutApp');
-
-      // Left: Billing & Payment
       const left = createEl('div', { class: 'col-md-7' });
       const right = createEl('div', { class: 'col-md-5' });
       const row = createEl('div', { class: 'row' });
 
-      // Billing form (generated with JS)
+      // Billing form
       const billingCard = createEl('div', { class: 'payment-method form-section' });
       billingCard.appendChild(createEl('h4', {}, 'Billing Information'));
       const form = createEl('form', { id: 'paymentForm', novalidate: 'novalidate' });
@@ -154,7 +156,7 @@ try {
       // Name
       const nameGroup = createEl('div', { class: 'mb-3' });
       nameGroup.appendChild(createEl('label', { for: 'billingName' }, 'Full name'));
-      const nameInput = createEl('input', { type: 'text', id: 'billingName', class: 'form-control', placeholder: 'Ex: Sami Ben Ali (letters and spaces only)', required: 'required' });
+      const nameInput = createEl('input', { type: 'text', id: 'billingName', class: 'form-control', placeholder: 'Ex: Sami Ben Ali', required: 'required' });
       nameGroup.appendChild(nameInput);
       nameGroup.appendChild(createEl('div', { id: 'errBillingName', class: 'form-text', style: 'color:#ff6b6b; display:none;' }));
       form.appendChild(nameGroup);
@@ -162,7 +164,7 @@ try {
       // Email
       const emailGroup = createEl('div', { class: 'mb-3' });
       emailGroup.appendChild(createEl('label', { for: 'billingEmail' }, 'Email'));
-      const emailInput = createEl('input', { type: 'email', id: 'billingEmail', class: 'form-control', placeholder: 'Ex: example@example.com', required: 'required' });
+      const emailInput = createEl('input', { type: 'email', id: 'billingEmail', class: 'form-control', placeholder: 'example@example.com', required: 'required' });
       emailGroup.appendChild(emailInput);
       emailGroup.appendChild(createEl('div', { id: 'errBillingEmail', class: 'form-text', style: 'color:#ff6b6b; display:none;' }));
       form.appendChild(emailGroup);
@@ -171,12 +173,8 @@ try {
       const countryGroup = createEl('div', { class: 'mb-3' });
       countryGroup.appendChild(createEl('label', { for: 'billingCountry' }, 'Country'));
       const countrySelect = createEl('select', { id: 'billingCountry', class: 'form-control' });
-      countries.forEach(c => {
-        const opt = createEl('option', { value: c.code }, `${c.name} (${c.dial})`);
-        countrySelect.appendChild(opt);
-      });
+      countries.forEach(c => countrySelect.appendChild(createEl('option', { value: c.code }, `${c.name} (${c.dial})`)));
       countryGroup.appendChild(countrySelect);
-      countryGroup.appendChild(createEl('div', { class: 'form-text', style: 'color:#aaa;' }, 'Select your country to validate phone number format.'));
       form.appendChild(countryGroup);
 
       // Phone
@@ -204,7 +202,7 @@ try {
       const methods = [
         { id: 'pm_card', label: 'Credit / Debit Card' },
         { id: 'pm_paypal', label: 'PayPal' },
-        { id: 'pm_bank', label: 'Bank Transfer' }
+        { id: 'pm_bank', label: 'Bank Transfer (Upload PDF)' }
       ];
 
       methods.forEach(m => {
@@ -212,31 +210,50 @@ try {
         const input = createEl('input', { class: 'form-check-input', type: 'radio', name: 'paymentMethod', id: m.id, value: m.id });
         if (m.id === 'pm_card') input.checked = true;
         wrapper.appendChild(input);
-        const label = createEl('label', { class: 'form-check-label', for: m.id }, m.label);
-        wrapper.appendChild(label);
+        wrapper.appendChild(createEl('label', { class: 'form-check-label', for: m.id }, m.label));
         payCard.appendChild(wrapper);
       });
 
-      // Card fields container - only shown when card selected
+      // Card fields
       const cardFields = createEl('div', { id: 'cardFields', class: 'mt-3' });
       cardFields.appendChild(createEl('label', { for: 'cardNumber' }, 'Card Number'));
       const cardNumberInput = createEl('input', { type: 'text', id: 'cardNumber', class: 'form-control mb-2', placeholder: '4242 4242 4242 4242' });
       cardFields.appendChild(cardNumberInput);
       cardFields.appendChild(createEl('div', { id: 'errCardNumber', class: 'form-text', style: 'color:#ff6b6b; display:none;' }));
       const row2 = createEl('div', { class: 'd-flex gap-2' });
-      const cardExpInput = createEl('input', { type: 'text', id: 'cardExp', class: 'form-control', placeholder: 'MM/YY' });
-      const cardCvcInput = createEl('input', { type: 'text', id: 'cardCvc', class: 'form-control', placeholder: 'CVC' });
-      row2.appendChild(cardExpInput);
-      row2.appendChild(cardCvcInput);
+      row2.appendChild(createEl('input', { type: 'text', id: 'cardExp', class: 'form-control', placeholder: 'MM/YY' }));
+      row2.appendChild(createEl('input', { type: 'text', id: 'cardCvc', class: 'form-control', placeholder: 'CVC' }));
       cardFields.appendChild(row2);
       payCard.appendChild(cardFields);
+
+      // Bank Transfer fields
+      const bankFields = createEl('div', { id: 'bankTransferFields', style: 'display:none;' });
+      bankFields.appendChild(createEl('h5', { style: 'color:#ec6090; margin-bottom:15px;' }, '📄 Upload Bank Transfer Receipt'));
+      bankFields.appendChild(createEl('p', { style: 'color:#aaa; font-size:0.9rem;' }, 'Please upload a PDF copy of your bank transfer receipt. Our system will verify it automatically.'));
+      
+      const fileInputWrapper = createEl('div', { class: 'mb-3' });
+      const fileInput = createEl('input', { type: 'file', id: 'pdfUpload', accept: 'application/pdf', style: 'display:none;' });
+      const uploadLabel = createEl('label', { for: 'pdfUpload', class: 'upload-label' });
+      uploadLabel.innerHTML = '<i class="fa fa-upload"></i> Choose PDF File';
+      fileInputWrapper.appendChild(fileInput);
+      fileInputWrapper.appendChild(uploadLabel);
+      fileInputWrapper.appendChild(createEl('div', { id: 'errPdfUpload', class: 'form-text', style: 'color:#ff6b6b; display:none;' }));
+      bankFields.appendChild(fileInputWrapper);
+
+      const pdfPreview = createEl('div', { id: 'pdfPreview', class: 'pdf-preview' });
+      pdfPreview.innerHTML = '<i class="fa fa-file-pdf-o" style="font-size:2rem; color:#ec6090;"></i><div class="pdf-info" id="pdfInfo"></div>';
+      bankFields.appendChild(pdfPreview);
+
+      const verificationStatus = createEl('div', { id: 'verificationStatus', class: 'verification-status' });
+      bankFields.appendChild(verificationStatus);
+
+      payCard.appendChild(bankFields);
 
       // Submit button
       const btnWrap = createEl('div', { class: 'form-section mt-3' });
       const payBtn = createEl('button', { type: 'button', class: 'pay-btn' }, 'Pay ' + (summary.total ? ('$' + parseFloat(summary.total).toFixed(2)) : ''));
       btnWrap.appendChild(payBtn);
 
-      // Append to left column
       left.appendChild(billingCard);
       left.appendChild(payCard);
       left.appendChild(btnWrap);
@@ -250,12 +267,11 @@ try {
         cartData.forEach(item => {
           const itemRow = createEl('div', { class: 'd-flex justify-content-between mb-2' });
           itemRow.appendChild(createEl('div', {}, item.title + ' x' + item.quantity));
-          itemRow.appendChild(createEl('div', {}, '$' + (parseFloat(item.subtotal).toFixed(2))));
+          itemRow.appendChild(createEl('div', {}, '$' + parseFloat(item.subtotal).toFixed(2)));
           cartCard.appendChild(itemRow);
         });
       }
-      const hr = createEl('hr');
-      cartCard.appendChild(hr);
+      cartCard.appendChild(createEl('hr'));
       const subtotalRow = createEl('div', { class: 'd-flex justify-content-between mb-2' });
       subtotalRow.appendChild(createEl('div', {}, 'Subtotal'));
       subtotalRow.appendChild(createEl('div', {}, '$' + (summary.subtotal ? parseFloat(summary.subtotal).toFixed(2) : '0.00')));
@@ -272,19 +288,26 @@ try {
       cartCard.appendChild(totalRow);
 
       right.appendChild(cartCard);
-
       row.appendChild(left);
       row.appendChild(right);
       app.appendChild(row);
 
-      // Interactivity: payment method toggle
+      // Payment method toggle
       document.querySelectorAll('input[name="paymentMethod"]').forEach(r => r.addEventListener('change', function() {
-        const showCard = (this.value === 'pm_card');
-        document.getElementById('cardFields').style.display = showCard ? 'block' : 'none';
+        document.getElementById('cardFields').style.display = (this.value === 'pm_card') ? 'block' : 'none';
+        document.getElementById('bankTransferFields').style.display = (this.value === 'pm_bank') ? 'block' : 'none';
+        if (this.value !== 'pm_bank') {
+          uploadedPdfFile = null;
+          pdfVerified = false;
+          document.getElementById('pdfPreview').classList.remove('show');
+          document.getElementById('verificationStatus').className = 'verification-status';
+        }
       }));
 
-      // Initialize visibility and country hints
-      document.getElementById('cardFields').style.display = document.getElementById('pm_card').checked ? 'block' : 'none';
+      // Initialize visibility
+      document.getElementById('cardFields').style.display = 'block';
+
+      // Country hints
       const countrySelectEl = document.getElementById('billingCountry');
       function updatePhoneHint() {
         const country = getCountryData(countrySelectEl.value);
@@ -294,15 +317,79 @@ try {
       countrySelectEl.addEventListener('change', updatePhoneHint);
       updatePhoneHint();
 
-      // Real-time simple validation clearers
+      // Clear errors on input
       function clearError(elId) { const e = document.getElementById(elId); if (e) e.style.display = 'none'; }
       nameInput.addEventListener('input', () => clearError('errBillingName'));
       emailInput.addEventListener('input', () => clearError('errBillingEmail'));
       phoneInput.addEventListener('input', () => clearError('errBillingPhone'));
       cardNumberInput.addEventListener('input', () => clearError('errCardNumber'));
 
+      // PDF upload handler with automatic verification
+      document.getElementById('pdfUpload').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const errEl = document.getElementById('errPdfUpload');
+        const statusEl = document.getElementById('verificationStatus');
+        errEl.style.display = 'none';
+        statusEl.className = 'verification-status';
+        pdfVerified = false;
+
+        if (!file) {
+          uploadedPdfFile = null;
+          document.getElementById('pdfPreview').classList.remove('show');
+          return;
+        }
+
+        if (file.type !== 'application/pdf') {
+          errEl.textContent = 'Please upload a PDF file only.';
+          errEl.style.display = 'block';
+          uploadedPdfFile = null;
+          return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          errEl.textContent = 'PDF file size must be less than 10MB.';
+          errEl.style.display = 'block';
+          uploadedPdfFile = null;
+          return;
+        }
+
+        uploadedPdfFile = file;
+        document.getElementById('pdfInfo').textContent = `✓ ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+        document.getElementById('pdfPreview').classList.add('show');
+
+        // Show verifying status
+        statusEl.className = 'verification-status verifying';
+        statusEl.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Verifying bank receipt...';
+
+        // Verify the PDF immediately
+        const formData = new FormData();
+        formData.append('bank_receipt', file);
+
+        fetch('verify_bank_receipt.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            pdfVerified = true;
+            statusEl.className = 'verification-status success';
+            statusEl.innerHTML = '<i class="fa fa-check-circle"></i> Bank receipt verified successfully! Bank: ' + (data.bank_name || 'Unknown');
+          } else {
+            pdfVerified = false;
+            statusEl.className = 'verification-status error';
+            statusEl.innerHTML = '<i class="fa fa-times-circle"></i> ' + (data.message || 'Invalid bank receipt. Please upload a valid bank transfer receipt.');
+          }
+        })
+        .catch(error => {
+          pdfVerified = false;
+          statusEl.className = 'verification-status error';
+          statusEl.innerHTML = '<i class="fa fa-times-circle"></i> Error verifying receipt: ' + error.message;
+        });
+      });
+
+      // Pay button
       payBtn.addEventListener('click', function() {
-        // Validate fields
         let valid = true;
         const name = document.getElementById('billingName').value.trim();
         const email = document.getElementById('billingEmail').value.trim();
@@ -310,79 +397,88 @@ try {
         const phone = document.getElementById('billingPhone').value.trim();
         const method = document.querySelector('input[name="paymentMethod"]:checked').value;
 
-        // Name
+        // Validate name
         if (!name || !validateName(name)) {
-          const el = document.getElementById('errBillingName'); el.textContent = 'Please enter a valid name (letters, spaces, apostrophes allowed).'; el.style.display = 'block'; valid = false;
+          document.getElementById('errBillingName').textContent = 'Please enter a valid name.';
+          document.getElementById('errBillingName').style.display = 'block';
+          valid = false;
         }
 
-        // Email
+        // Validate email
         if (!email || !validateEmail(email)) {
-          const el = document.getElementById('errBillingEmail'); el.textContent = 'Please enter a valid email (example@example.com).'; el.style.display = 'block'; valid = false;
+          document.getElementById('errBillingEmail').textContent = 'Please enter a valid email.';
+          document.getElementById('errBillingEmail').style.display = 'block';
+          valid = false;
         }
 
-        // Phone
-        if (phone) {
-          if (!validatePhone(phone, countryCode)) {
-            const el = document.getElementById('errBillingPhone'); el.textContent = 'Phone number does not match the selected country format.'; el.style.display = 'block'; valid = false;
-          }
-        } else {
-          const el = document.getElementById('errBillingPhone'); el.textContent = 'Please enter your phone number.'; el.style.display = 'block'; valid = false;
+        // Validate phone
+        if (!phone || !validatePhone(phone, countryCode)) {
+          document.getElementById('errBillingPhone').textContent = 'Phone number format is invalid.';
+          document.getElementById('errBillingPhone').style.display = 'block';
+          valid = false;
         }
 
-        // Card validation only when card method selected
         if (method === 'pm_card') {
           const cardVal = document.getElementById('cardNumber').value.trim();
           if (!cardVal || !validateCardNumber(cardVal)) {
-            const el = document.getElementById('errCardNumber'); el.textContent = 'Please enter a valid card number.'; el.style.display = 'block'; valid = false;
+            document.getElementById('errCardNumber').textContent = 'Please enter a valid card number.';
+            document.getElementById('errCardNumber').style.display = 'block';
+            valid = false;
+          }
+        }
+
+        if (method === 'pm_bank') {
+          if (!uploadedPdfFile) {
+            document.getElementById('errPdfUpload').textContent = 'Please upload your bank transfer receipt (PDF).';
+            document.getElementById('errPdfUpload').style.display = 'block';
+            valid = false;
+          } else if (!pdfVerified) {
+            document.getElementById('errPdfUpload').textContent = 'The uploaded PDF is not a valid bank receipt. Please upload a valid bank transfer receipt.';
+            document.getElementById('errPdfUpload').style.display = 'block';
+            valid = false;
           }
         }
 
         if (!valid) return;
 
-        // Build payload for server
-        const payload = {
-          name, email, address: document.getElementById('billingAddress').value.trim(), country: countryCode, phone, method
-        };
-
         payBtn.disabled = true;
         payBtn.textContent = 'Processing...';
 
-        // Send to server endpoint
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('address', document.getElementById('billingAddress').value.trim());
+        formData.append('country', countryCode);
+        formData.append('phone', phone);
+        formData.append('method', method);
+
+        if (method === 'pm_bank' && uploadedPdfFile) {
+          formData.append('bank_receipt', uploadedPdfFile);
+        }
+
         fetch('process_checkout.php', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
+          body: formData
         })
-        .then(response => {
-          return response.json().then(data => ({
-            status: response.status,
-            data: data
-          }));
-        })
-        .then(result => {
-          if (result.data.success) {
-            alert('Payment successful! Your order has been created and cart cleared. Thank you for your purchase!');
-            window.location.href = 'shop.php';
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.href = 'order-confirmation.php';
           } else {
-            const errorMsg = result.data.message || 'Unknown error occurred';
-            alert('Payment failed: ' + errorMsg);
-            console.error('Payment error:', result);
+            alert('Payment failed: ' + (data.message || 'Unknown error'));
             payBtn.disabled = false;
             payBtn.textContent = 'Pay ' + (summary.total ? ('$' + parseFloat(summary.total).toFixed(2)) : '');
           }
         })
         .catch(error => {
-          alert('Error processing payment: ' + error.message);
-          console.error('Fetch error:', error);
+          alert('Error: ' + error.message);
           payBtn.disabled = false;
           payBtn.textContent = 'Pay ' + (summary.total ? ('$' + parseFloat(summary.total).toFixed(2)) : '');
         });
       });
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      buildCheckoutApp();
-    });
+    document.addEventListener('DOMContentLoaded', buildCheckoutApp);
   </script>
 </body>
 </html>

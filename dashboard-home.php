@@ -10,7 +10,7 @@ if (session_status() === PHP_SESSION_NONE) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <title>GameAct - Gaming Platform</title>
+  <title>GameAct - Admin Dashboard</title>
 
   <link href="views/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="views/assets/css/fontawesome.css">
@@ -250,8 +250,8 @@ if (session_status() === PHP_SESSION_NONE) {
   <div class="hero-section">
     <div class="hero-content">
       <img src="views/assets/images/logo.png" alt="GameAct Logo" class="hero-logo">
-      <h1 class="hero-title">Welcome to <span>GameAct</span></h1>
-      <p class="hero-subtitle">Your Ultimate Gaming Platform - Choose Your Module</p>
+      <h1 class="hero-title">Admin <span>Dashboard</span></h1>
+      <p class="hero-subtitle">Choose the module you want to consult</p>
     </div>
   </div>
 
@@ -261,7 +261,7 @@ if (session_status() === PHP_SESSION_NONE) {
       <div class="modules-grid">
 
         <!-- Module 1: SHOP -->
-        <a href="shop-home.php" class="module-card module-shop">
+        <a href="views/frontoffice/login_admin.php" class="module-card module-shop">
           <span class="status-badge status-active">
             <i class="fa fa-check-circle"></i> Active
           </span>
@@ -269,11 +269,11 @@ if (session_status() === PHP_SESSION_NONE) {
             <i class="fa fa-shopping-bag"></i>
           </div>
           <h3 class="module-title">Shop</h3>
-          <p class="module-desc">Browse and purchase your favorite games from our extensive collection</p>
+          <p class="module-desc">Manage games, prices, and shop inventory</p>
         </a>
 
         <!-- Module 2: FEED -->
-        <a href="#" class="module-card module-feed" onclick="showComingSoon('Feed'); return false;">
+        <a href="views/frontoffice/login_admin.php" class="module-card module-feed">
           <span class="status-badge status-soon">
             <i class="fa fa-clock"></i> Coming Soon
           </span>
@@ -281,11 +281,11 @@ if (session_status() === PHP_SESSION_NONE) {
             <i class="fa fa-rss"></i>
           </div>
           <h3 class="module-title">Feed</h3>
-          <p class="module-desc">Stay updated with the latest gaming news, updates, and community posts</p>
+          <p class="module-desc">Manage community posts, news, and updates</p>
         </a>
 
         <!-- Module 3: TUTORIALS -->
-        <a href="#" class="module-card module-tutorials" onclick="showComingSoon('Tutorials'); return false;">
+        <a href="views/frontoffice/login_admin.php" class="module-card module-tutorials">
           <span class="status-badge status-soon">
             <i class="fa fa-clock"></i> Coming Soon
           </span>
@@ -293,11 +293,11 @@ if (session_status() === PHP_SESSION_NONE) {
             <i class="fa fa-graduation-cap"></i>
           </div>
           <h3 class="module-title">Tutorials</h3>
-          <p class="module-desc">Learn gaming tips, tricks, and strategies from expert players</p>
+          <p class="module-desc">Manage gaming tutorials and guides</p>
         </a>
 
         <!-- Module 4: EVENTS -->
-        <a href="#" class="module-card module-events" onclick="showComingSoon('Events'); return false;">
+        <a href="views/frontoffice/login_admin.php" class="module-card module-events">
           <span class="status-badge status-soon">
             <i class="fa fa-clock"></i> Coming Soon
           </span>
@@ -305,11 +305,11 @@ if (session_status() === PHP_SESSION_NONE) {
             <i class="fa fa-calendar"></i>
           </div>
           <h3 class="module-title">Events</h3>
-          <p class="module-desc">Participate in gaming tournaments, competitions, and community events</p>
+          <p class="module-desc">Manage tournaments, competitions, and events</p>
         </a>
 
         <!-- Module 5: QUIZS -->
-        <a href="#" class="module-card module-quizs" onclick="showComingSoon('Quizs'); return false;">
+        <a href="views/frontoffice/login_admin.php" class="module-card module-quizs">
           <span class="status-badge status-soon">
             <i class="fa fa-clock"></i> Coming Soon
           </span>
@@ -317,19 +317,19 @@ if (session_status() === PHP_SESSION_NONE) {
             <i class="fa fa-question-circle"></i>
           </div>
           <h3 class="module-title">Quizs</h3>
-          <p class="module-desc">Test your gaming knowledge with fun and challenging quizzes</p>
+          <p class="module-desc">Manage gaming quizzes and questions</p>
         </a>
 
-        <!-- Module 6: LOGIN -->
-        <a href="views/frontoffice/login_client.php" class="module-card module-login">
+        <!-- Module 6: USERS -->
+        <a href="views/frontoffice/login_admin.php" class="module-card module-login">
           <span class="status-badge status-active">
             <i class="fa fa-check-circle"></i> Active
           </span>
           <div class="module-icon">
-            <i class="fa fa-user-circle"></i>
+            <i class="fa fa-users"></i>
           </div>
-          <h3 class="module-title">Login</h3>
-          <p class="module-desc">Access your account, manage profile, and track your gaming journey</p>
+          <h3 class="module-title">Users</h3>
+          <p class="module-desc">Manage user accounts and permissions</p>
         </a>
 
       </div>
@@ -352,11 +352,6 @@ if (session_status() === PHP_SESSION_NONE) {
   <script src="views/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
   <script>
-    // Fonction pour afficher "Coming Soon" pour les modules non disponibles
-    function showComingSoon(moduleName) {
-      alert('🚀 ' + moduleName + ' module is coming soon!\n\nStay tuned for updates!');
-    }
-
     // Animation au scroll
     document.addEventListener('DOMContentLoaded', function() {
       const cards = document.querySelectorAll('.module-card');

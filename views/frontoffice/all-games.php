@@ -324,7 +324,7 @@ $cartCount = $gameController->getCartItemCount($userId);
 
           <div class="col-lg-12 text-center mt-5">
             <div class="main-button">
-              <a href="shop.php">Back to Shop</a>
+              <a href="../../shop-home.php">Back to Shop</a>
             </div>
           </div>
 

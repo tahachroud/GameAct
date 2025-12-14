@@ -1,10 +1,4 @@
 <?php
-/**
- * Controller Game - Gestion des requêtes pour les jeux et le panier
- * Fait le lien entre les Models (Game, Cart) et les Vues
- */
-
-// Inclusion des fichiers nécessaires
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../model/Game.php';
 
@@ -12,17 +6,11 @@ class GameController {
     
     private Game $gameModel;
     private Cart $cartModel;
-    
-    /**
-     * Constructeur - Initialise le model Game
-     */
+
     public function __construct() {
         $this->gameModel = new Game();
     }
-    
-    /**
-     * Initialiser le model Cart (lazy loading)
-     */
+
     private function initCartModel(): void {
         if (!isset($this->cartModel)) {
             require_once __DIR__ . '/../model/Cart.php';
@@ -30,108 +18,59 @@ class GameController {
         }
     }
     
-    // ========================================
-    // MÉTHODES PUBLIQUES POUR ACCÉDER AU MODEL GAME
-    // ========================================
-    
-    /**
-     * Récupérer tous les jeux
-     */
+
     public function getAllGames(): array {
         return $this->gameModel->getAllGames();
     }
-    
-    /**
-     * Récupérer un jeu par ID
-     */
+
     public function getGameById(int $id): ?array {
         return $this->gameModel->getGameById($id);
     }
-    
-    /**
-     * Récupérer les jeux les mieux notés
-     */
+
     public function getTopRatedGames(int $limit = 5): array {
         return $this->gameModel->getTopRatedGames($limit);
     }
-    
-    /**
-     * Récupérer les jeux les plus téléchargés
-     */
+
     public function getTopDownloadedGames(int $limit = 5): array {
         return $this->gameModel->getTopDownloadedGames($limit);
     }
-    
-    /**
-     * Rechercher des jeux
-     */
+
     public function searchGames(string $search): array {
         return $this->gameModel->searchGames($search);
     }
     
-    /**
-     * Récupérer les jeux par catégorie
-     */
     public function getGamesByCategory(string $category): array {
         return $this->gameModel->getGamesByCategory($category);
     }
-    
-    /**
-     * Récupérer les jeux gratuits
-     */
+
     public function getFreeGames(): array {
         return $this->gameModel->getFreeGames();
     }
     
-    /**
-     * Récupérer les statistiques globales
-     */
     public function getGlobalStats(): array {
         return $this->gameModel->getGlobalStats();
     }
     
-    /**
-     * Incrémenter les téléchargements
-     */
     public function incrementDownloads(int $id): bool {
         return $this->gameModel->incrementDownloads($id);
     }
     
-    /**
-     * Incrémenter les likes
-     */
     public function incrementLikes(int $id): bool {
         return $this->gameModel->incrementLikes($id);
     }
-    
-    /**
-     * Ajouter un jeu
-     */
+
     public function addGame(Game $game): bool {
         return $this->gameModel->addGame($game);
     }
-    
-    /**
-     * Mettre à jour un jeu
-     */
+
     public function updateGame(Game $game): bool {
         return $this->gameModel->updateGame($game);
     }
-    
-    /**
-     * Supprimer un jeu
-     */
+
     public function deleteGame(int $id): bool {
         return $this->gameModel->deleteGame($id);
     }
-    
-    // ========================================
-    // MÉTHODES POUR LE FRONTOFFICE (Shop)
-    // ========================================
-    
-    /**
-     * Afficher la page shop avec tous les jeux
-     */
+
     public function showShop(): void {
         try {
             $games = $this->gameModel->getAllGames();
@@ -143,9 +82,6 @@ class GameController {
         }
     }
     
-    /**
-     * Afficher tous les jeux (page all-games)
-     */
     public function showAllGames(): void {
         try {
             $games = $this->gameModel->getAllGames();
@@ -154,10 +90,7 @@ class GameController {
             die('Erreur lors de l\'affichage de tous les jeux : ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Afficher les détails d'un jeu
-     */
+
     public function showGameDetails(): void {
         try {
             if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -178,10 +111,7 @@ class GameController {
             die('Erreur lors de l\'affichage des détails : ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Rechercher des jeux
-     */
+
     public function searchGamesView(): void {
         try {
             $searchTerm = $_GET['search'] ?? '';
@@ -198,9 +128,6 @@ class GameController {
         }
     }
     
-    /**
-     * Filtrer les jeux par catégorie
-     */
     public function filterByCategory(): void {
         try {
             $category = $_GET['category'] ?? '';
@@ -216,10 +143,7 @@ class GameController {
             die('Erreur lors du filtrage : ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Incrémenter les téléchargements d'un jeu
-     */
+
     public function downloadGame(): void {
         try {
             if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -235,14 +159,7 @@ class GameController {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-    
-    // ========================================
-    // MÉTHODES POUR LE BACKOFFICE (Admin)
-    // ========================================
-    
-    /**
-     * Afficher le dashboard admin
-     */
+
     public function showDashboard(): void {
         try {
             $stats = $this->gameModel->getGlobalStats();
@@ -253,10 +170,7 @@ class GameController {
             die('Erreur lors de l\'affichage du dashboard : ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Afficher la liste des jeux (admin)
-     */
+
     public function showGamesList(): void {
         try {
             $games = $this->gameModel->getAllGames();
@@ -266,16 +180,10 @@ class GameController {
         }
     }
     
-    /**
-     * Afficher le formulaire d'ajout de jeu
-     */
     public function showAddGameForm(): void {
         require_once __DIR__ . '/../views/backoffice/add-game.php';
     }
-    
-    /**
-     * Traiter l'ajout d'un nouveau jeu
-     */
+
     public function addGameProcess(): void {
         try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -327,10 +235,7 @@ class GameController {
             exit();
         }
     }
-    
-    /**
-     * Afficher le formulaire de modification
-     */
+
     public function showEditGameForm(): void {
         try {
             if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -351,10 +256,7 @@ class GameController {
             die('Erreur lors de l\'affichage du formulaire : ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Traiter la modification d'un jeu
-     */
+
     public function updateGameProcess(): void {
         try {
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -420,9 +322,6 @@ class GameController {
         }
     }
     
-    /**
-     * Supprimer un jeu
-     */
     public function deleteGameProcess(): void {
         try {
             if (!isset($_GET['id']) || empty($_GET['id'])) {
@@ -450,14 +349,7 @@ class GameController {
             echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
-    
-    // ========================================
-    // MÉTHODES UTILITAIRES PRIVÉES
-    // ========================================
-    
-    /**
-     * Gérer l'upload d'une image
-     */
+
     private function handleImageUpload(?array $file, string $defaultPath = ''): string {
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             return $defaultPath;
@@ -483,10 +375,7 @@ class GameController {
         
         return $defaultPath;
     }
-    
-    /**
-     * Gérer l'upload d'une vidéo
-     */
+
     private function handleVideoUpload(?array $file, string $defaultPath = ''): string {
         if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
             return $defaultPath;
@@ -839,5 +728,79 @@ class GameController {
             echo json_encode(['success' => false, 'count' => 0]);
         }
     }
+    /**
+ * Récupérer les détails d'une commande avec les jeux
+ */
+public function getOrderDetails(int $userId): array {
+    try {
+        $pdo = config::getConnexion();
+        
+        // Récupérer toutes les commandes récentes de l'utilisateur
+        $stmt = $pdo->prepare('
+            SELECT 
+                o.id,
+                o.game_id,
+                o.game_title,
+                o.quantity,
+                o.price,
+                o.payment_method,
+                o.receipt_path,
+                o.created_at,
+                g.download_link,
+                g.image_path
+            FROM orders o
+            LEFT JOIN games g ON o.game_id = g.id
+            WHERE o.user_id = :user_id
+            ORDER BY o.created_at DESC
+        ');
+        
+        $stmt->execute([':user_id' => $userId]);
+        $orders = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        if (empty($orders)) {
+            throw new Exception("No orders found for this user");
+        }
+        
+        // Calculer les totaux
+        $subtotal = 0;
+        $games = [];
+        
+        foreach ($orders as $order) {
+            $itemTotal = $order['price'] * $order['quantity'];
+            $subtotal += $itemTotal;
+            
+            $games[] = [
+                'id' => $order['game_id'],
+                'title' => $order['game_title'],
+                'quantity' => $order['quantity'],
+                'price' => $order['price'],
+                'subtotal' => $itemTotal,
+                'download_link' => $order['download_link'] ?? null,
+                'image_path' => $order['image_path'] ?? null
+            ];
+        }
+        
+        return [
+            'order_ids' => array_column($orders, 'id'),
+            'games' => $games,
+            'subtotal' => $subtotal,
+            'discount' => 0, // Vous pouvez ajouter la logique de discount si nécessaire
+            'total' => $subtotal,
+            'payment_method' => $orders[0]['payment_method'],
+            'created_at' => $orders[0]['created_at']
+        ];
+        
+    } catch (Exception $e) {
+        error_log("Error in getOrderDetails: " . $e->getMessage());
+        throw $e;
+    }
+}
+
+/**
+ * Obtenir la connexion PDO (si elle n'existe pas déjà)
+ */
+private function getConnection() {
+    return config::getConnexion();
+}
 }
 ?>
