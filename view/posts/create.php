@@ -15,7 +15,8 @@
     <label>User</label>
     <select name="user_id" class="form-control">
         <?php foreach ($users as $u): ?>
-            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($u['username']) ?></option>
+            <?php $displayName = $u['username'] ?? trim(($u['name'] ?? '') . ' ' . ($u['lastname'] ?? '')) ?: ($u['email'] ?? 'User #' . $u['id']); ?>
+            <option value="<?= $u['id'] ?>"><?= htmlspecialchars($displayName) ?></option>
         <?php endforeach; ?>
     </select>
 

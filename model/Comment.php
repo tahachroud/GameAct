@@ -13,10 +13,10 @@ class Comment {
     public function getAll()
     {
         $sql = "SELECT comments.*, posts.content AS post_content, users.username
-                FROM comments
-                JOIN posts ON comments.post_id = posts.id
-                JOIN users ON comments.user_id = users.id
-                ORDER BY comments.id DESC";
+            FROM comments
+            LEFT JOIN posts ON comments.post_id = posts.id
+            LEFT JOIN users ON comments.user_id = users.id
+            ORDER BY comments.created_at DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -66,10 +66,10 @@ class Comment {
     public function getByPost($post_id)
     {
         $sql = "SELECT comments.*, users.username 
-                FROM comments
-                JOIN users ON users.id = comments.user_id
-                WHERE post_id = ?
-                ORDER BY comments.id ASC";
+            FROM comments
+            LEFT JOIN users ON users.id = comments.user_id
+            WHERE post_id = ?
+            ORDER BY comments.created_at DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$post_id]);
@@ -82,6 +82,15 @@ class Comment {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$post_id]);
         return $stmt->fetchColumn();
+    }
+
+    // Detect if an identical comment was recently created to avoid duplicates
+    public function existsDuplicate($post_id, $user_id, $content, $seconds = 5)
+    {
+        $sql = "SELECT COUNT(*) FROM comments WHERE post_id = ? AND user_id = ? AND content = ? AND created_at >= (NOW() - INTERVAL ? SECOND)";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$post_id, $user_id, $content, $seconds]);
+        return (int)$stmt->fetchColumn() > 0;
     }
 
 }

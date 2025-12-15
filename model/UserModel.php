@@ -35,6 +35,24 @@ class UserModel
         return $user ?: null;
     }
 
+    // Return an existing user id to use as default when no session user is available
+    public function getDefaultUserId(): ?int
+    {
+        // Prefer an admin if present
+        $sql = "SELECT id FROM users WHERE role = 'admin' LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row && isset($row['id'])) return (int)$row['id'];
+
+        // Fallback to first user in table
+        $sql = "SELECT id FROM users ORDER BY id ASC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['id'] ?? null;
+    }
+
     public function create(array $data): bool
     {
         $sql = "INSERT INTO users (name, lastname, email, password, cin, gender, location, age, role)

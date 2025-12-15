@@ -1,6 +1,6 @@
 <?php 
 require_once __DIR__ . '/../model/Post.php';
-require_once __DIR__ . '/../model/User.php';
+require_once __DIR__ . '/../model/UserModel.php';
 require_once __DIR__ . '/../helpers/HashtagHelper.php';
 
 class PostController {
@@ -27,7 +27,7 @@ class PostController {
     /* CREATE FORM (ADMIN) */
     public function createForm()
     {
-        $userModel = new User($this->db);
+        $userModel = new UserModel($this->db);
         $users = $userModel->getAll();
 
         ob_start();
@@ -157,8 +157,14 @@ $postModel->update(
     ================================= */
     public function createFromFront()
     {
-        // DEFAULT USER ID (must exist in users table)
-        $user_id = 5;  
+        // Use logged-in user when available, otherwise pick an existing user from DB
+        // require a logged-in user
+        $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+        if ($user_id === null) {
+            $_SESSION['errors'] = ['Please log in to create a post.'];
+            header("Location: index-community.php?action=community");
+            exit();
+        }
 
         $content = trim($_POST['content']);
 
@@ -302,7 +308,7 @@ public function editForm()
     }
 
     // Fetch users for dropdown
-    $userModel = new User($this->db);
+    $userModel = new UserModel($this->db);
     $users = $userModel->getAll();
 
     // Load edit view

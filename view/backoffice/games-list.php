@@ -178,7 +178,7 @@ $games = $gameController->getAllGames();
       <li class="nav-item"><a href="dashboard_shop.php" class="nav-link"><i class="fa fa-dashboard"></i> Dashboard</a></li>
       <li class="nav-item"><a href="games-list.php" class="nav-link active"><i class="fa fa-list"></i> Games List</a></li>
       <li class="nav-item"><a href="add-game.php" class="nav-link"><i class="fa fa-plus"></i> Add Game</a></li>
-      <li class="nav-item"><a href="../frontoffice/shop.php" class="nav-link"><i class="fa fa-eye"></i> View Site</a></li>
+      <li class="nav-item"><a href="../../shop-home.php" class="nav-link"><i class="fa fa-eye"></i> View Site</a></li>
       <li class="nav-item"><hr style="border-color: #2a2a3e;"></li>
       <li class="nav-item"><a href="../../index.html" class="nav-link text-danger"><i class="fa fa-sign-out"></i> Logout</a></li>
     </ul>

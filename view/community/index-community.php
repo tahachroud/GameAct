@@ -1,11 +1,13 @@
 <?php 
 // Redirect to proper controller if accessed directly
 if (!isset($GLOBALS['feed'])) {
-    header('Location: /gameact_shop/index-community.php?action=community');
+    // Use relative redirect so it works regardless of install folder
+    header('Location: index-community.php?action=community');
     exit();
 }
 
-$default_user = 5; 
+// Front posting/commenting requires logged-in user; no DB fallback used
+$default_user = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
 ?> 
 
 <?php
@@ -22,12 +24,25 @@ $topHashtags = $GLOBALS['topHashtags'] ?? [];
 $selectedTag = $GLOBALS['selectedTag'] ?? null;
 
 // Base URL for assets
-$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+$basePath = rtrim(str_replace('\\','/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+if ($basePath === '/' || $basePath === '\\' || $basePath === '.') $basePath = '';
+$scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+$baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath;
 ?>
 
 <div class="container mt-4">
     <div class="card composer mb-5">
 
+        <?php if (!empty($_SESSION['errors'])): ?>
+            <div class="alert alert-danger">
+                <?php foreach ($_SESSION['errors'] as $e): ?>
+                    <div><?= htmlspecialchars($e) ?></div>
+                <?php endforeach; ?>
+            </div>
+            <?php unset($_SESSION['errors']); ?>
+        <?php endif; ?>
+
+        <?php if ($default_user): ?>
         <form id="composerForm" action="index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
 
             <div class="composer-top d-flex">
@@ -66,6 +81,11 @@ $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
             <div class="error-box"></div>
 
         </form>
+        <?php else: ?>
+            <div class="composer-top p-3">
+                <p>Please <a href="view/frontoffice/login_client.php">log in</a> to post to the community.</p>
+            </div>
+        <?php endif; ?>
 
     </div>
 </div>
@@ -121,12 +141,12 @@ $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
 
                             <!-- Header -->
                             <div class="d-flex align-items-center mb-2">
-                                <img class="avatar" src="public/assets/images/avatar-01.jpg">
+                                <img class="avatar" src="<?= $baseUrl ?>/public/assets/images/avatar-01.jpg">
                                 <div>
                                     <strong><?= htmlspecialchars($item['username']) ?></strong>
                                     <div class="text-muted"><?= htmlspecialchars($item['created_at']) ?></div>
                                 </div>
-                            </div>
+                            </div> 
 
                             <!-- Content -->
 <?php
@@ -143,7 +163,7 @@ $formatted = preg_replace(
 if (!empty($item['images'])) {
     $imgs = json_decode($item['images'], true);
     foreach ($imgs as $img) { ?>
-        <img src="public/uploads/posts/<?= $img ?>" class="post-img">
+        <img src="<?= $baseUrl ?>/public/uploads/posts/<?= $img ?>" class="post-img">
 <?php }
 }
 ?>
@@ -151,7 +171,7 @@ if (!empty($item['images'])) {
 
 <!-- PDF BUTTON -->
 <?php if (!empty($item['pdf'])): ?>
-    <a href="public/uploads/posts/<?= $item['pdf'] ?>" target="_blank" class="neon-file pdf">
+    <a href="<?= $baseUrl ?>/public/uploads/posts/<?= $item['pdf'] ?>" target="_blank" class="neon-file pdf">
         📄 View PDF
     </a>
 <?php endif; ?>
@@ -188,17 +208,21 @@ if (!empty($item['images'])) {
 
                                 <?php foreach ($postComments as $c): ?>
                                     <div class="comment-box mb-2">
-                                        <strong><?= htmlspecialchars($c['username']) ?>:</strong>
+                                            <strong><?= htmlspecialchars($c['username'] ?? 'Unknown') ?>:</strong>
                                         <?= nl2br(htmlspecialchars($c['content'])) ?>
                                     </div>
                                 <?php endforeach; ?>
 
                                 <!-- Comment Form -->
+                                <?php if ($default_user): ?>
                                 <form method="POST" action="index-community.php?action=comments_store_front" class="comment-form mt-2">
                                     <input type="hidden" name="post_id" value="<?= $item['id'] ?>">
                                     <textarea name="content" class="form-control" rows="1" placeholder="Write a comment..."></textarea>
                                     <button class="btn btn-sm btn-primary mt-1">Send</button>
                                 </form>
+                                <?php else: ?>
+                                    <div class="mt-2 text-muted">Please <a href="index.php?action=login">log in</a> to comment.</div>
+                                <?php endif; ?>
 
                             </div>
 
@@ -219,7 +243,7 @@ if (!empty($item['images'])) {
 
                             <!-- Header shared -->
                             <div class="d-flex align-items-center mb-2">
-                                <img class="avatar" src="public/assets/images/avatar-01.jpg">
+                                <img class="avatar" src="<?= $baseUrl ?>/public/assets/images/avatar-01.jpg">
                                 <div>
                                     <strong><?= htmlspecialchars($item['username']) ?></strong>
                                     <div class="text-muted"><?= htmlspecialchars($item['created_at']) ?> — a partagé une publication</div>
@@ -244,7 +268,7 @@ $origImages = json_decode($original['images'], true);
 if ($origImages && count($origImages) > 0):
     foreach ($origImages as $img):
 ?>
-        <img src="public/uploads/posts/<?= $img ?>" class="post-img">
+        <img src="<?= $baseUrl ?>/public/uploads/posts/<?= $img ?>" class="post-img">
 <?php 
     endforeach;
 endif;
@@ -252,7 +276,7 @@ endif;
 
 
 <?php if (!empty($original['pdf'])): ?>
-    <a href="public/uploads/posts/<?= $original['pdf'] ?>" target="_blank" class="pdf-link">
+    <a href="<?= $baseUrl ?>/public/uploads/posts/<?= $original['pdf'] ?>" target="_blank" class="pdf-link">
         📄 Download PDF
     </a>
 <?php endif; ?>
@@ -284,16 +308,20 @@ endif;
 
                                     <?php foreach ($originalComments as $c): ?>
                                         <div class="comment-box mb-2">
-                                            <strong><?= htmlspecialchars($c['username']) ?>:</strong>
+                                            <strong><?= htmlspecialchars($c['username'] ?? 'Unknown') ?>:</strong>
                                             <?= nl2br(htmlspecialchars($c['content'])) ?>
                                         </div>
                                     <?php endforeach; ?>
 
+                                    <?php if ($default_user): ?>
                                     <form method="POST" action="index-community.php?action=comments_store_front" class="comment-form mt-2">
                                         <input type="hidden" name="post_id" value="<?= $original['id'] ?>">
                                         <textarea name="content" class="form-control" rows="1" placeholder="Write a comment..."></textarea>
                                         <button class="btn btn-sm btn-primary mt-1">Send</button>
                                     </form>
+                                    <?php else: ?>
+                                        <div class="mt-2 text-muted">Please <a href="index.php?action=login">log in</a> to comment.</div>
+                                    <?php endif; ?>
 
                                 </div>
 
@@ -344,46 +372,53 @@ document.addEventListener("DOMContentLoaded", function () {
     // -----------------------------
     // IMAGE BUTTON (OPEN FILE DIALOG)
     // -----------------------------
-    imgBtn.addEventListener("click", () => imgInput.click());
+    if (imgBtn && imgInput) {
+        imgBtn.addEventListener("click", () => imgInput.click());
 
-    // -----------------------------
-    // MULTIPLE IMAGES PREVIEW
-    // -----------------------------
-    imgInput.addEventListener("change", function () {
-        multiPreview.innerHTML = "";
-        Array.from(this.files).forEach(file => {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.width = "80px";
-                img.style.borderRadius = "8px";
-                img.style.boxShadow = "0 0 12px #ff00ff";
-                multiPreview.appendChild(img);
-            };
-            reader.readAsDataURL(file);
+        // -----------------------------
+        // MULTIPLE IMAGES PREVIEW
+        // -----------------------------
+        imgInput.addEventListener("change", function () {
+            if (!multiPreview) return;
+            multiPreview.innerHTML = "";
+            Array.from(this.files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.style.width = "80px";
+                    img.style.borderRadius = "8px";
+                    img.style.boxShadow = "0 0 12px #ff00ff";
+                    multiPreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
         });
-    });
+    }
 
     // -----------------------------
     // PDF PREVIEW
     // -----------------------------
-    pdfBtn.addEventListener("click", () => pdfInput.click());
-    pdfInput.addEventListener("change", function () {
-        if (this.files.length > 0) {
-            pdfPreview.style.display = "block";
-            pdfPreview.innerHTML = "📄 PDF attached: " + this.files[0].name;
-        }
-    });
+    if (pdfBtn && pdfInput && pdfPreview) {
+        pdfBtn.addEventListener("click", () => pdfInput.click());
+        pdfInput.addEventListener("change", function () {
+            if (this.files.length > 0) {
+                pdfPreview.style.display = "block";
+                pdfPreview.innerHTML = "📄 PDF attached: " + this.files[0].name;
+            }
+        });
+    }
 
     // -----------------------------
     // LINK PREVIEW
     // -----------------------------
-    linkBtn.addEventListener("click", () => linkInput.style.display = "block");
-    linkInput.addEventListener("input", () => {
-        linkPreview.style.display = "block";
-        linkPreview.innerHTML = "🔗 " + linkInput.value;
-    });
+    if (linkBtn && linkInput && linkPreview) {
+        linkBtn.addEventListener("click", () => linkInput.style.display = "block");
+        linkInput.addEventListener("input", () => {
+            linkPreview.style.display = "block";
+            linkPreview.innerHTML = "🔗 " + linkInput.value;
+        });
+    }
 });
 </script>
 

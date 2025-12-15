@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../model/user.php';
+require_once __DIR__ . '/../model/UserModel.php';
 
 class userController {
 
@@ -127,6 +128,104 @@ class userController {
         } catch (Exception $e) {
             die('Error: ' . $e->getMessage());
         }
+    }
+
+    // --- Controller-style methods for dashboard UI (compat with previous userzcontroller)
+    public function index()
+    {
+        $userModel = new UserModel($this->db);
+        $users = $userModel->getAll();
+
+        ob_start();
+        include __DIR__ . '/../view/users/list.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../view/layout.php';
+    }
+
+    public function createForm()
+    {
+        ob_start();
+        include __DIR__ . '/../view/users/create.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../view/layout.php';
+    }
+
+    public function create()
+    {
+        $userModel = new UserModel($this->db);
+
+        $avatar = null;
+        if (!empty($_FILES['avatar']['name'])) {
+            $folder = __DIR__ . '/../public/uploads/users/';
+            if (!is_dir($folder)) mkdir($folder, 0777, true);
+
+            $avatar = time() . "_" . $_FILES['avatar']['name'];
+            move_uploaded_file($_FILES['avatar']['tmp_name'], $folder . $avatar);
+        }
+
+        $userModel->create([
+            'username' => $_POST['username'] ?? null,
+            'level'    => $_POST['level'] ?? null,
+            'xp'       => $_POST['xp'] ?? null,
+            'badges'   => $_POST['badges'] ?? null,
+            'avatar'   => $avatar
+        ]);
+
+        header("Location: index-community.php?action=users");
+        exit();
+    }
+
+    public function editForm()
+    {
+        $userModel = new UserModel($this->db);
+        $data = $userModel->find($_GET['id']);
+
+        ob_start();
+        include __DIR__ . '/../view/users/edit.php';
+        $content = ob_get_clean();
+        include __DIR__ . '/../view/layout.php';
+    }
+
+    public function update()
+    {
+        $userModel = new UserModel($this->db);
+        $old = $userModel->find($_POST['id']);
+
+        $avatar = $old['avatar'] ?? null;
+
+        if (!empty($_FILES['avatar']['name'])) {
+            $folder = __DIR__ . '/../public/uploads/users/';
+            $avatar = time() . "_" . $_FILES['avatar']['name'];
+            move_uploaded_file($_FILES['avatar']['tmp_name'], $folder . $avatar);
+        }
+
+        $userModel->update([
+            'id'       => $_POST['id'],
+            'username' => $_POST['username'],
+            'level'    => $_POST['level'],
+            'xp'       => $_POST['xp'],
+            'badges'   => $_POST['badges'],
+            'avatar'   => $avatar
+        ]);
+
+        header("Location: index-community.php?action=users");
+        exit();
+    }
+
+    public function delete()
+    {
+        $userModel = new UserModel($this->db);
+        $userModel->delete($_GET['id']);
+
+        header("Location: index-community.php?action=users");
+        exit();
+    }
+
+    // Return a DB-backed default user id (delegates to UserModel)
+    public function getDefaultUserId(): ?int
+    {
+        $userModel = new UserModel($this->db);
+        return $userModel->getDefaultUserId();
     }
 }
 

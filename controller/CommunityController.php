@@ -209,8 +209,12 @@ if (file_exists($hashtagsFile)) {
         return;
     }
 
-    // default user
-    $userId = 5;
+    // require logged-in user when sharing
+    $userId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+    if ($userId === null) {
+        echo json_encode(["error" => "Please log in to share posts."]);
+        return;
+    }
 
     $postModel = new Post($this->db);
     $shareId = $postModel->createShare($userId, $postId, $message);

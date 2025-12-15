@@ -1,7 +1,7 @@
  <?php 
 require_once __DIR__ . '/../model/Comment.php';
 require_once __DIR__ . '/../model/Post.php';
-require_once __DIR__ . '/../model/User.php';
+require_once __DIR__ . '/../model/UserModel.php';
 
 class CommentController {
 
@@ -30,7 +30,7 @@ class CommentController {
         $postModel = new Post($this->db);
         $posts = $postModel->getAll();
 
-        $userModel = new User($this->db);
+        $userModel = new UserModel($this->db);
         $users = $userModel->getAll();
 
         ob_start();
@@ -71,11 +71,14 @@ class CommentController {
 
         // INSERTION
         $commentModel = new Comment($this->db);
-        $commentModel->create([
-            "post_id" => $post_id,
-            "user_id" => $user_id,
-            "content" => htmlspecialchars($content)
-        ]);
+        // Prevent accidental duplicate submission (same content by same user on same post within short time)
+        if (!$commentModel->existsDuplicate($post_id, $user_id, htmlspecialchars($content), 5)) {
+            $commentModel->create([
+                "post_id" => $post_id,
+                "user_id" => $user_id,
+                "content" => htmlspecialchars($content)
+            ]);
+        }
 
         header("Location: index-community.php?action=comments");
         exit();
@@ -90,7 +93,7 @@ class CommentController {
         $postModel = new Post($this->db);
         $posts = $postModel->getAll();
 
-        $userModel = new User($this->db);
+        $userModel = new UserModel($this->db);
         $users = $userModel->getAll();
 
         ob_start();
@@ -148,9 +151,15 @@ class CommentController {
     // =============================================
 // FRONT OFFICE COMMENT CREATION
 // =============================================
-public function createFromFront()
-{
-    $user_id = 5;
+    public function createFromFront()
+    {
+    // require logged-in user
+    $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+    if ($user_id === null) {
+        $_SESSION['errors'] = ["Please log in to comment."];
+        header("Location: index-community.php?action=community");
+        exit();
+    }
     $post_id = trim($_POST['post_id']);
     $content = trim($_POST['content']);
 
@@ -167,6 +176,12 @@ public function createFromFront()
     }
 
     $commentModel = new Comment($this->db);
+    if ($commentModel->existsDuplicate($post_id, $user_id, htmlspecialchars($content), 5)) {
+        $_SESSION['errors'] = ["Duplicate comment detected."];
+        header("Location: index-community.php?action=community");
+        exit();
+    }
+
     $commentModel->create([
         "post_id" => $post_id,
         "user_id" => $user_id,
@@ -179,7 +194,12 @@ public function createFromFront()
 
 public function createFromAjax()
 {
-    $user_id = 5;
+    // require logged-in user for ajax
+    $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
+    if ($user_id === null) {
+        echo json_encode(["error" => "Please log in to comment"]);
+        return;
+    }
     $post_id = $_POST['post_id'];
     $content = trim($_POST['content']);
 
@@ -189,6 +209,11 @@ public function createFromAjax()
     }
 
     $commentModel = new Comment($this->db);
+    if ($commentModel->existsDuplicate($post_id, $user_id, htmlspecialchars($content), 5)) {
+        echo json_encode(["error" => "Duplicate comment detected"]);
+        return;
+    }
+
     $commentModel->create([
         "post_id" => $post_id,
         "user_id" => $user_id,

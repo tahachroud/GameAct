@@ -28,7 +28,8 @@
     <select name="user_id" class="form-control">
         <?php foreach ($users as $u): ?>
             <option value="<?= $u['id'] ?>" <?= ($u['id'] == $comment['user_id']) ? 'selected' : '' ?>>
-                <?= htmlspecialchars($u['username']) ?>
+                <?php $displayName = $u['username'] ?? trim(($u['name'] ?? '') . ' ' . ($u['lastname'] ?? '')) ?: ($u['email'] ?? 'User #' . $u['id']); ?>
+                <?= htmlspecialchars($displayName) ?>
             </option>
         <?php endforeach; ?>
     </select>

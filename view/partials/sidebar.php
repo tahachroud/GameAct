@@ -33,13 +33,7 @@ function isActive($page) {
             </a>
         </li>
 
-        <li>
-            <a href="index-community.php?action=users" class="<?= isActive('users') ?>">
-                <i class="fa-solid fa-user"></i>
-                <span>Users</span>
-            </a>
-        </li>
-
+       
         <li>
             <a href="index-community.php?action=community" class="<?= isActive('community') ?>">
                 <i class="fa-solid fa-users"></i>

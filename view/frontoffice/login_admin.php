@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['role'] = $user['role'];
 
         if ($user['role'] === 'admin') {
-            header('Location: ../backoffice/dashboard.php');
+            header('Location: ../backoffice/dashboard_shop.php');
         } else {
             header('Location: profile.php');
         }
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit" class="button">Login</button>
 
                 <div class="forgot-password">
-                    <a href="#">Lost your password?</a>
+                    <a href="forgot_password.php">Lost your password?</a>
                 </div>
             </form>
         </div>

@@ -15,7 +15,7 @@
     <tbody>
         <?php foreach ($comments as $c): ?>
             <tr>
-                <td><?= htmlspecialchars($c['username']) ?></td>
+                <td><?= htmlspecialchars($c['username'] ?? 'Unknown') ?></td>
                 <td><?= htmlspecialchars(substr($c['post_content'], 0, 40)) ?>...</td>
                 <td><?= htmlspecialchars($c['content']) ?></td>
 

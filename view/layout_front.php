@@ -10,18 +10,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <?php 
-  $base = dirname($_SERVER['PHP_SELF']);
-  if ($base === '/' || $base === '\\') $base = '';
-  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+  $basePath = rtrim(str_replace('\\','/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+  if ($basePath === '/' || $basePath === '\\' || $basePath === '.') $basePath = '';
+  // Determine scheme to avoid mixed-content blocking
+  $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') ? 'https' : 'http';
+  $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $basePath;
+  // Debug: emit computed base URL for quick verification (view page source to see value)
+  echo "<!-- baseUrl: " . htmlspecialchars($baseUrl) . " -->\n";
   ?>
 
   <!-- FRONTEND CSS -->
-<link rel="stylesheet" href="/projet/public/vendor/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/projet/public/assets/css/fontawesome.css">
-<link rel="stylesheet" href="/projet/public/assets/css/templatemo-cyborg-gaming.css">
-<link rel="stylesheet" href="/projet/public/assets/css/animate.css">
-<link rel="stylesheet" href="/projet/public/assets/css/moving-bg.css">
-<link rel="stylesheet" href="/projet/public/assets/css/feed.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/vendor/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/fontawesome.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/templatemo-cyborg-gaming.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/animate.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/moving-bg.css">
+<link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
 
 
   <link rel="stylesheet"
@@ -55,7 +59,7 @@
           <nav class="main-nav">
 
             <a href="index.php" class="logo">
-              <img src="view/front-office/assets/images/logo.png" alt="GameAct" style="max-height: 80px; width: auto; vertical-align: middle; margin-top: 0;">
+              <img src="<?= $baseUrl ?>/view/front-office/assets/images/logo.png" alt="GameAct" style="max-height: 80px; width: auto; vertical-align: middle; margin-top: 0;">
             </a>
 
             
@@ -73,7 +77,7 @@
 
               <li><a href="#">Tutorials</a></li>
               <li class="active"><a href="index-community.php?action=community">Community</a></li>
-              <li><a href="#">Profile <img src="public/assets/images/profile-header.jpg"></a></li>
+              <li><a href="#">Profile <img src="<?= $baseUrl ?>/public/assets/images/profile-header.jpg"></a></li>
 
             </ul>
 
