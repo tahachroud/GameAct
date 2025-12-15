@@ -193,13 +193,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
             <ul class="nav">
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="browse.html">Evénements</a></li>
-                <li><a href="details.html">Boutique</a></li>
-                <li><a href="streams.html">Communauté</a></li>
-                <li><a href="streams.html">Tutoriels</a></li>
-                <li><a href="streams.html">Leaderboard</a></li>
-                <li><a href="index.html">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
+                <li><a href="../../index.php" class="active">Home</a></li>
+                <li><a href="../front-office/events/front/index.php">Evénements</a></li>
+                <li><a href="../../shop-home.php">Boutique</a></li>
+                <li><a href="../../index-community.php?action=community">Communauté</a></li>
+                <li><a href="../../module-card module-tutorials">Tutoriels</a></li>
+                <li><a href="../../quiz_list.php">Quiz</a></li>
+                <li><a href="profile.php">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
             </ul>
         </nav>
     </header>

@@ -175,8 +175,8 @@ if (file_exists($hashtagsFile)) {
         }
 
         // compute engagement score and fetch user info
-        require_once __DIR__ . '/../model/User.php';
-        $userModel = new User($this->db);
+        require_once __DIR__ . '/../model/UserModel.php';
+        $userModel = new UserModel($this->db);
 
         $contributors = [];
         foreach ($userScores as $uid => $scores) {

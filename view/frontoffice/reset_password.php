@@ -52,7 +52,7 @@ $validToken = $stmt->fetch();
 
 <header class="header-area header-sticky">
     <nav class="main-nav">
-        <a href="../../index.html" class="logo">
+        <a href="../../index.php" class="logo">
             <img src="assets/images/logo.png" alt="GameAct">
         </a>
     </nav>
