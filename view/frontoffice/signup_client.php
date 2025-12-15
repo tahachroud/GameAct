@@ -180,6 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="moving-bg"></div>
 
+
     <header class="header-area header-sticky">
         <nav class="main-nav">
             <a href="index.html" class="logo">
