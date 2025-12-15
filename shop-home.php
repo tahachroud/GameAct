@@ -42,16 +42,16 @@ $popularCategories = [
   ?>
 
   <!-- FRONTEND CSS -->
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/vendor/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/fontawesome.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/templatemo-cyborg-gaming.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/animate.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/moving-bg.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/owl.css">
+  <link rel="stylesheet" href="public/vendor/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="public/assets/css/fontawesome.css">
+  <link rel="stylesheet" href="public/assets/css/templatemo-cyborg-gaming.css">
+  <link rel="stylesheet" href="public/assets/css/animate.css">
+  <link rel="stylesheet" href="public/assets/css/moving-bg.css">
+  <link rel="stylesheet" href="public/assets/css/owl.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
 
   <!-- Feed CSS should load LAST to override template styles -->
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
+  <link rel="stylesheet" href="public/assets/css/feed.css">
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -285,17 +285,6 @@ $popularCategories = [
 <body>
   <div class="moving-bg"></div>
 
-  <!-- Preloader -->
-  <div id="js-preloader" class="js-preloader">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
 
   <!-- Header -->
   <header class="header-area header-sticky">
@@ -314,7 +303,7 @@ $popularCategories = [
             </div>
             <ul class="nav">
               <li><a href="index.php" class="active">Home</a></li>
-              <li><a href="view/frontoffice/shop-home.php">Shop</a></li>
+              <li><a href="#">Shop</a></li>
               <li><a href="view/frontoffice/all-games.php">Browse Games</a></li>
               <li><a href="dashboard-home.php">Admin</a></li>
               <li>

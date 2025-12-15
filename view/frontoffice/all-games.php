@@ -48,7 +48,7 @@ $cartCount = $gameController->getCartItemCount($userId);
   <?php
   $base = dirname($_SERVER['PHP_SELF']);
   if ($base === '/' || $base === '\\') $base = '';
-  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/projet';
   ?>
 
   <!-- FRONTEND CSS -->
@@ -61,6 +61,8 @@ $cartCount = $gameController->getCartItemCount($userId);
 
   <!-- Feed CSS should load LAST to override template styles -->
   <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/admin.css">
+  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/back.css">
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

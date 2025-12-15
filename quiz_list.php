@@ -16,7 +16,7 @@ $isAjaxRequest = isset($_GET['page']) && in_array($_GET['page'], ['get_quizzes_b
 ini_set('display_errors', $isAjaxRequest ? 0 : 1);
 
 // Include database configuration
-require_once __DIR__ . '/config/db.php';
+require_once __DIR__ . '/config.php';
 
 // Include controller
 require_once __DIR__ . '/controller/QuizController.php';

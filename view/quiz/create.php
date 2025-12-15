@@ -364,7 +364,7 @@ include 'view/header.php';
                             
                             <div class="question-counter">
                                 <span id="question-count">0</span>
-                                <p style="color: #666; margin: 5px 0 0;">Questions added (Minimum: 8, Maximum: 12)</p>
+                                <p style="color: #666; margin: 5px 0 0;">Questions added (Minimum: 5, Maximum: 20)</p>
                             </div>
 
                             <div id="questions-container"></div>
@@ -396,7 +396,7 @@ include 'view/header.php';
 <?php
 $customJS = '
 let questionCount = 0;
-const MIN_QUESTIONS = ;
+const MIN_QUESTIONS = 5;
 const MAX_QUESTIONS = 20;
 
 // ==========================================

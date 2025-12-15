@@ -16,14 +16,13 @@
   ?>
 
   <!-- FRONTEND CSS -->
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/vendor/bootstrap/css/bootstrap.min.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/fontawesome.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/templatemo-cyborg-gaming.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/animate.css">
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/moving-bg.css">
-  
-  <!-- Feed CSS should load LAST to override template styles -->
-  <link rel="stylesheet" href="<?= $baseUrl ?>/public/assets/css/feed.css">
+<link rel="stylesheet" href="/projet/public/vendor/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/projet/public/assets/css/fontawesome.css">
+<link rel="stylesheet" href="/projet/public/assets/css/templatemo-cyborg-gaming.css">
+<link rel="stylesheet" href="/projet/public/assets/css/animate.css">
+<link rel="stylesheet" href="/projet/public/assets/css/moving-bg.css">
+<link rel="stylesheet" href="/projet/public/assets/css/feed.css">
+
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -55,8 +54,8 @@
         <div class="col-12">
           <nav class="main-nav">
 
-            <a href="<?= $baseUrl ?>/index.php" class="logo">
-              <img src="<?= $baseUrl ?>/view/front-office/assets/images/logo.png" alt="GameAct" style="max-height: 80px; width: auto; vertical-align: middle; margin-top: 0;">
+            <a href="index.php" class="logo">
+              <img src="view/front-office/assets/images/logo.png" alt="GameAct" style="max-height: 80px; width: auto; vertical-align: middle; margin-top: 0;">
             </a>
 
             
@@ -64,17 +63,17 @@
 
 
             <ul class="nav">
-               <li><a href="<?= $baseUrl ?>/index-community.php?action=search_form" id="search-link">🔍 Advanced Search</a></li>
-              <li><a href="<?= $baseUrl ?>/index.php">Home</a></li>
-              <li><a href="<?= $baseUrl ?>/shop-home.php">Shop</a></li>
+               <li><a href="index-community.php?action=search_form" id="search-link">🔍 Advanced Search</a></li>
+              <li><a href="index.php">Home</a></li>
+              <li><a href="shop-home.php">Shop</a></li>
 <li>
     <a href="<?= $baseUrl ?>/view/front-office/events/front/index.php">Events</a>
 </li>
 
 
               <li><a href="#">Tutorials</a></li>
-              <li class="active"><a href="<?= $baseUrl ?>/index-community.php?action=community">Community</a></li>
-              <li><a href="#">Profile <img src="<?= $baseUrl ?>/public/assets/images/profile-header.jpg"></a></li>
+              <li class="active"><a href="index-community.php?action=community">Community</a></li>
+              <li><a href="#">Profile <img src="public/assets/images/profile-header.jpg"></a></li>
 
             </ul>
 

@@ -30,7 +30,7 @@ $cartCount = $gameController->getCartItemCount($userId);
   <?php
   $base = dirname($_SERVER['PHP_SELF']);
   if ($base === '/' || $base === '\\') $base = '';
-  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
+  $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/projet';
   ?>
 
   <!-- FRONTEND CSS -->
@@ -83,17 +83,6 @@ $cartCount = $gameController->getCartItemCount($userId);
 </head>
 
 <body>
-  <!-- Preloader -->
-  <div id="js-preloader" class="js-preloader" style="display: none;">
-    <div class="preloader-inner">
-      <span class="dot"></span>
-      <div class="dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>
-  </div>
 
   <!-- Header -->
   <header class="header-area header-sticky">

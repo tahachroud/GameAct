@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <header class="header-area header-sticky">
         <nav class="main-nav">
-            <a href="index.html" class="logo">
+            <a href="../../index.php" class="logo">
                 <img src="assets/images/logo.png" alt="">
             </a>
             <div class="search-input">

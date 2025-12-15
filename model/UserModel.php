@@ -10,6 +10,17 @@ class UserModel
         $this->db = $db;
     }
 
+    public function getAll(): array
+    {
+        $sql = "SELECT id, name, lastname, email, cin, gender, location, age, role
+                FROM users";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function find(int $id): ?array
     {
         $sql = "SELECT id, name, lastname, email, cin, gender, location, age, role
@@ -22,5 +33,61 @@ class UserModel
 
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         return $user ?: null;
+    }
+
+    public function create(array $data): bool
+    {
+        $sql = "INSERT INTO users (name, lastname, email, password, cin, gender, location, age, role)
+                VALUES (:name, :lastname, :email, :password, :cin, :gender, :location, :age, :role)";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':name' => $data['name'] ?? null,
+            ':lastname' => $data['lastname'] ?? null,
+            ':email' => $data['email'] ?? null,
+            ':password' => $data['password'] ?? null,
+            ':cin' => $data['cin'] ?? null,
+            ':gender' => $data['gender'] ?? null,
+            ':location' => $data['location'] ?? null,
+            ':age' => $data['age'] ?? null,
+            ':role' => $data['role'] ?? null
+        ]);
+    }
+
+    public function update(array $data): bool
+    {
+        $sql = "UPDATE users
+                SET name = :name,
+                    lastname = :lastname,
+                    email = :email,
+                    password = :password,
+                    cin = :cin,
+                    gender = :gender,
+                    location = :location,
+                    age = :age,
+                    role = :role
+                WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            ':id' => $data['id'] ?? null,
+            ':name' => $data['name'] ?? null,
+            ':lastname' => $data['lastname'] ?? null,
+            ':email' => $data['email'] ?? null,
+            ':password' => $data['password'] ?? null,
+            ':cin' => $data['cin'] ?? null,
+            ':gender' => $data['gender'] ?? null,
+            ':location' => $data['location'] ?? null,
+            ':age' => $data['age'] ?? null,
+            ':role' => $data['role'] ?? null
+        ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $sql = "DELETE FROM users WHERE id = :id";
+
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([':id' => $id]);
     }
 }

@@ -3,6 +3,7 @@ session_start();
 
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/controller/DashboardController.php';
+require_once __DIR__ . '/controller/userzController.php';
 
 
 spl_autoload_register(function ($class) {
@@ -82,27 +83,27 @@ switch ($action) {
 
 
     case 'users':
-        (new UserController($db))->index();
+        (new userzcontroller($db))->index();
         break;
 
     case 'users_create':
-        (new UserController($db))->createForm();
+        (new userzcontroller($db))->createForm();
         break;
 
     case 'users_store':
-        (new UserController($db))->create();
+        (new userzcontroller($db))->create();
         break;
 
     case 'users_edit':
-        (new UserController($db))->editForm();
+        (new userzcontroller($db))->editForm();
         break;
 
     case 'users_update':
-        (new UserController($db))->update();
+        (new userzcontroller($db))->update();
         break;
 
     case 'users_delete':
-        (new UserController($db))->delete();
+        (new userzcontroller($db))->delete();
         break;
 
 

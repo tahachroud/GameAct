@@ -28,7 +28,7 @@ $baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
 <div class="container mt-4">
     <div class="card composer mb-5">
 
-        <form id="composerForm" action="<?= $baseUrl ?>/index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
+        <form id="composerForm" action="index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
 
             <div class="composer-top d-flex">
                 <img class="avatar" src="<?= $baseUrl ?>/public/assets/images/avatar-01.jpg" alt="">

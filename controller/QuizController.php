@@ -5,7 +5,7 @@
  * UPDATED: Compatible with friend's authentication (uses $_SESSION['user_id'])
  */
 
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../model/Quiz.php';
 require_once __DIR__ . '/../model/Question.php';
 require_once __DIR__ . '/../model/QuizQuestion.php';

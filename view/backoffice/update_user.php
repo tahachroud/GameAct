@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <header class="header-area header-sticky">
         <nav class="main-nav">
-            <a href="index.html" class="logo">
+            <a href="../../index.php" class="logo">
                 <img src="assets/images/logo.png" alt="">
             </a>
             <div class="search-input">
@@ -109,9 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </form>
             </div>
             <ul class="nav">
-                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="../../index.php" class="active">Home</a></li>
                 <li><a href="dashboard.php">Back to Dashboard</a></li>
-                <li><a href="index.html">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
+                <li><a href="../frontoffice/profile.php">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
             </ul>
         </nav>
     </header>

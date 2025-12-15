@@ -84,7 +84,7 @@ function formatDateRange($date, $heure_deb, $heure_fin) {
       <div class="row">
         <div class="col-12">
           <nav class="main-nav">
-            <a href="../../index.html" class="logo">
+            <a href="../../../../index.php" class="logo">
               <img src="../../assets/images/logo.png" alt="GameAct" style="height:60px;">
             </a>
             <ul class="nav">
