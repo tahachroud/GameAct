@@ -1,3 +1,7 @@
+<?php
+// Define base URL for assets - IMPORTANT!
+$base_url = '/GameAct/';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,13 +11,13 @@
     <title><?php echo $pageTitle ?? 'Gaming Quiz'; ?></title>
 
     <!-- Bootstrap core CSS -->
-    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo $base_url; ?>vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="assets/css/fontawesome.css">
-    <link rel="stylesheet" href="assets/css/templatemo-cyborg-gaming.css">
-    <link rel="stylesheet" href="assets/css/owl.css">
-    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/fontawesome.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/templatemo-cyborg-gaming.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/owl.css">
+    <link rel="stylesheet" href="<?php echo $base_url; ?>assets/css/animate.css">
     <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
     
     <!-- Fix for sticky header -->
@@ -112,21 +116,21 @@
             <div class="row">
                 <div class="col-12">
                     <nav class="main-nav">
-                        <a href="quiz_list.php" class="logo">
-                            <img src="assets/images/logo.png?v=<?php echo time(); ?>" alt="">
+                        <a href="<?php echo $base_url; ?>quiz_list.php" class="logo">
+                            <img src="<?php echo $base_url; ?>assets/images/logo.png?v=<?php echo time(); ?>" alt="">
                         </a>
                         <div class="search-input">
-                            <form id="search" action="quiz_list.php" method="GET">
+                            <form id="search" action="<?php echo $base_url; ?>quiz_list.php" method="GET">
                                 <input type="hidden" name="page" value="quiz_list">
                                 <input type="text" placeholder="Search Quiz..." id='searchText' name="search" value="<?php echo $_GET['search'] ?? ''; ?>" />
                                 <i class="fa fa-search"></i>
                             </form>
                         </div>
                         <ul class="nav">
-                            <li><a href="quiz_list.php?page=quiz_list" class="<?php echo ($page ?? '') == 'quiz_list' ? 'active' : ''; ?>">Quiz</a></li>
-                            <li><a href="quiz_list.php?page=quiz_create" class="<?php echo ($page ?? '') == 'quiz_create' ? 'active' : ''; ?>">Create Quiz</a></li>
-                            <li><a href="quiz_list.php?page=user_my_quizzes" class="<?php echo ($page ?? '') == 'user_my_quizzes' ? 'active' : ''; ?>">My Quizzes</a></li>
-                            <li><a href="#">Profile <img src="assets/images/profile-header.jpg" alt=""></a></li>
+                            <li><a href="<?php echo $base_url; ?>quiz_list.php?page=quiz_list" class="<?php echo ($page ?? '') == 'quiz_list' ? 'active' : ''; ?>">Quiz</a></li>
+                            <li><a href="<?php echo $base_url; ?>quiz_list.php?page=quiz_create" class="<?php echo ($page ?? '') == 'quiz_create' ? 'active' : ''; ?>">Create Quiz</a></li>
+                            <li><a href="<?php echo $base_url; ?>quiz_list.php?page=user_my_quizzes" class="<?php echo ($page ?? '') == 'user_my_quizzes' ? 'active' : ''; ?>">My Quizzes</a></li>
+                            <li><a href="#">Profile <img src="<?php echo $base_url; ?>assets/images/profile-header.jpg" alt=""></a></li>
                         </ul>   
                         <a class='menu-trigger'>
                             <span>Menu</span>

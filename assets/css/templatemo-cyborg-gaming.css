@@ -346,12 +346,12 @@ Header Style
   -moz-transition: all .5s ease 0s;
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
-  display: none;
+  display: block;
 }
 
 .header-area {
   background-color: transparent;
-  position: absolute;
+  position: fixed;
   height: 70px;
   top: 15px;
   left: 0;
@@ -361,6 +361,7 @@ Header Style
   -moz-transition: all .5s ease 0s;
   -o-transition: all .5s ease 0s;
   transition: all .5s ease 0s;
+  position: fixed;
 }
 
 .header-area .main-nav {
@@ -369,6 +370,7 @@ Header Style
   display: flex;
   padding: 15px 0px;
   border-radius: 50px;
+  position: fixed;
 }
 
 .background-header .main-nav {
@@ -412,6 +414,7 @@ Header Style
 
 .header-area .main-nav .logo img {
   width: 191px;
+  
 }
 
 .background-header .main-nav .logo {

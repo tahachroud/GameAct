@@ -312,9 +312,9 @@ if (session_status() === PHP_SESSION_NONE) {
         </a>
 
         <!-- Module 5: QUIZS -->
-        <a href="#" class="module-card module-quizs" onclick="showComingSoon('Quizs'); return false;">
-          <span class="status-badge status-soon">
-            <i class="fa fa-clock"></i> Coming Soon
+        <a href="quiz_list.php" class="module-card module-quizs" >
+          <span class="status-badge status-active">
+            <i class="fa fa-check-circle"></i> Active
           </span>
           <div class="module-icon">
             <i class="fa fa-question-circle"></i>
