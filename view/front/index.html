@@ -11,9 +11,19 @@
   <link rel="stylesheet" href="./assets/owl.css" />
 </head>
 
+<div class="search-box">
+  <input
+    type="text"
+    id="searchInput"
+    placeholder=" Rechercher un tutoriel..."
+    autocomplete="off"
+  />
+  <ul id="suggestions"></ul>
+</div>
+
 <body>
   <div class="container mt-5">
-    <h2 class="text-center mb-4 text-light">🎮 Tutoriels disponibles</h2>
+    <h2 class="text-center mb-4 text-light">Tutoriels disponibles</h2>
 
     <div id="tutorials" class="row"></div>
 

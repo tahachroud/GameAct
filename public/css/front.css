@@ -36,3 +36,95 @@ body {
     margin: auto;
     padding-top: 20px;
 }
+/* Styles personnalisés pour la barre de recherche en temps réel (Thème Cyborg Gaming) */
+.header-search-container {
+    max-width: 300px; /* Limiter la largeur de la barre de recherche */
+}
+
+/* Style de base du groupe d'entrée */
+.header-search-container .input-group-text,
+.header-search-container .form-control {
+    background-color: #1f2122; /* Fond sombre */
+    border: 1px solid #363a3d; /* Bordure sombre subtile */
+    color: #ffffff; /* Texte blanc */
+    height: 46px; /* Correspondre à la hauteur typique des boutons/navigation */
+}
+
+/* Style de l'icône de recherche (fa-search) */
+.header-search-container .input-group-text {
+    border-right: none;
+    border-top-left-radius: 23px;
+    border-bottom-left-radius: 23px;
+    padding-left: 15px;
+}
+
+/* Style du champ de saisie principal */
+.header-search-container .form-control {
+    border-radius: 0;
+    border-left: none;
+    transition: border-color 0.3s ease;
+}
+
+/* État de focus pour le champ de saisie */
+.header-search-container .form-control:focus {
+    background-color: #2c2f31; /* Fond sombre légèrement plus clair au focus */
+    border-color: #e84057; /* Couleur d'accent rose/rouge */
+    box-shadow: 0 0 0 0.2rem rgba(232, 64, 87, 0.25); /* Ombre rose */
+}
+
+/* Style pour le bouton d'effacement de la recherche (Clear Search Button) */
+.btn-clear-search {
+    background: #1f2122;
+    color: #ffffff;
+    border: 1px solid #363a3d;
+    border-left: none;
+    border-top-right-radius: 23px;
+    border-bottom-right-radius: 23px;
+    padding: 0 15px;
+    line-height: 1;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-clear-search:hover {
+    background-color: #e84057; /* Accent au survol */
+    color: #ffffff;
+}
+
+/* Styles généraux des cartes (en supposant que 'tutorial-card' est votre élément de tutoriel) */
+.tutorial-card {
+    /* Style de base de la carte */
+    opacity: 1;
+    max-height: 1000px; /* Nombre arbitrairement grand pour la transition max-height */
+    overflow: hidden;
+    transition: opacity 0.4s ease-in-out, max-height 0.4s ease-in-out;
+    margin-bottom: 30px; /* Maintenir l'espacement lorsque visible */
+}
+
+.tutorial-card.hidden-by-search {
+    /* Style pour la carte cachée */
+    opacity: 0;
+    max-height: 0;
+    margin-bottom: 0; /* Supprimer l'espacement lorsque caché */
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* Espace réservé pour le message "Aucun résultat" */
+#no-results-message {
+    display: none;
+    color: #e84057;
+    padding: 20px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+/* Ajustements responsifs */
+@media (max-width: 992px) {
+    .header-search-container {
+        max-width: 100%;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 10px 15px; /* Ajouter du rembourrage pour les petits écrans */
+        background-color: #1f2122; /* Assurer que le fond sombre couvre le conteneur */
+    }
+}

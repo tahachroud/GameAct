@@ -35,8 +35,24 @@ switch ($action) {
     case "delete":
         $controller->delete($_GET["id"]);
         exit;
+
+    // MODIFICATION ICI : Remplacement de l'action 'categories' par 'rank'
+    case "rank":
+        // IMPORTANT : La méthode getRankedTutorials() doit exister et trier par likes.
+        case "rank":
+        // Cette ligne va maintenant fonctionner :
+        $tutorials = $controller->getRankedTutorials(); 
+        require "./view/front/rank.php"; // Charge la nouvelle vue
+        exit;
+        require "./view/front/rank.php"; // Charge la nouvelle vue
+        exit;
+    
+    case "about":
+        require "./view/front/about.php";
+        exit;
 }
 
+// ... Reste du code du FeedbackController ...
 
 $fb = new FeedbackController();
 
