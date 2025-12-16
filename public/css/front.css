@@ -128,3 +128,17 @@ body {
         background-color: #1f2122; /* Assurer que le fond sombre couvre le conteneur */
     }
 }
+.counter-pop {
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.btn-vote.active {
+  box-shadow: 0 0 12px #ff1177;
+  transform: scale(1.05);
+}

@@ -152,7 +152,7 @@
 </head>
 
 <body>
-<?php include "./view/front/header.php"; ?>   
+<?php include "./view/front/headertuto.php"; ?>   
 
 <h1>Tutoriels Gaming – Explore & Apprends</h1>
 
@@ -191,7 +191,7 @@
     </div>
 </div>
 
-<?php include "./view/front/footer.php"; ?>   
+<?php include "./view/front/footertuto.php"; ?>   
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

@@ -16,7 +16,7 @@ class TutorialController {
     
     public function index() {
         $data = $this->tutorial->getAll();
-        include (__DIR__. "/../view/front/index.php");
+        include (__DIR__. "/../view/front/indextuto.php");
     }
 
     
@@ -28,7 +28,7 @@ class TutorialController {
     
     public function adminList() {
         $data = $this->tutorial->getAll();
-        include "./view/back/list.php";
+        include "./view/back/listtutorials.php";
     }
 
     

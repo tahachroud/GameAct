@@ -1,4 +1,4 @@
-<?php require './view/front/header.php'; ?>
+<?php require './view/front/headertuto.php'; ?>
 
 <style>
 /* ================= BASE ================= */
@@ -240,4 +240,4 @@ document.querySelectorAll('.section').forEach(sec => {
 });
 </script>
 
-<?php require './view/front/footer.php'; ?>
+<?php require './view/front/footertuto.php'; ?>

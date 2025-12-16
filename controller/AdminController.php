@@ -12,6 +12,6 @@ class AdminController {
         $totalFeedbacks = $feedback->countAll();
         $totalLikes = $feedback->sumLikes();
 
-        require "./view/back/dashboard.php";
+        require "./view/back/dashboardtutorials.php";
     }
 }

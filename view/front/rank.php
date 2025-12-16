@@ -1,5 +1,5 @@
 <?php 
-require './view/front/header.php'; 
+require './view/front/headertuto.php'; 
 
 // ⚠️ Simulation si la BDD n'est pas encore branchée
 if (!isset($tutorials)) {
@@ -225,4 +225,4 @@ foreach ($tutorials as $tutorial):
   </div>
 </div>
 
-<?php require './view/front/footer.php'; ?>
+<?php require './view/front/footertuto.php'; ?>

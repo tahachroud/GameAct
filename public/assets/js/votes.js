@@ -1,130 +1,61 @@
-// public/assets/js/votes.js
-// Robuste : cooldown 2000ms par feedback + disable pendant le fetch.
-// Utilise dataset.cooldown pour être résistant au rerender.
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.btn-vote');
+  if (!btn) return;
 
-(function() {
-  const COOLDOWN_MS = 2000;
+  e.preventDefault();
 
-  // helper: disable/enable buttons of a feedback
-  function setButtonsState(feedbackId, disabled) {
-    const like = document.getElementById('like-btn-' + feedbackId);
-    const dislike = document.getElementById('dislike-btn-' + feedbackId);
-    [like, dislike].forEach(b => {
-      if (!b) return;
-      b.disabled = disabled;
-      b.style.pointerEvents = disabled ? 'none' : '';
-      b.style.opacity = disabled ? '0.6' : '';
-    });
-  }
+  if (btn.dataset.locked === '1') return;
+  btn.dataset.locked = '1';
 
-  // helper: start cooldown on a feedback element (prevents re-entrance)
-  function startCooldown(feedbackId) {
-    const like = document.getElementById('like-btn-' + feedbackId);
-    const dislike = document.getElementById('dislike-btn-' + feedbackId);
-    const now = Date.now();
-    [like, dislike].forEach(b => {
-      if (!b) return;
-      b.dataset.cooldown = String(now); // mark cooldown start time
-    });
-    // remove cooldown marker after COOLDOWN_MS
-    setTimeout(() => {
-      [like, dislike].forEach(b => { if (b) delete b.dataset.cooldown; });
-    }, COOLDOWN_MS);
-  }
+  const feedbackId = btn.dataset.id;
+  const type = btn.dataset.vote === '1' ? 'like' : 'dislike';
 
-  // check if feedback is in cooldown
-  function isInCooldown(feedbackId) {
-    const like = document.getElementById('like-btn-' + feedbackId);
-    if (!like) return false;
-    return !!like.dataset.cooldown;
-  }
+  const body = new URLSearchParams();
+  body.append('id', feedbackId);
+  body.append('type', type);
 
-  // main click handler (delegation)
-  document.addEventListener('click', function(e) {
-    const btn = e.target.closest('.btn-vote');
-    if (!btn) return;
-    e.preventDefault();
-
-    const feedbackId = btn.dataset.id;
-    const voteType = parseInt(btn.dataset.vote, 10); // 1 or -1
-
-    if (!feedbackId || ![1, -1].includes(voteType)) return;
-
-    // If cooldown active for this feedback, ignore click
-    if (isInCooldown(feedbackId)) {
-      // optional: give immediate feedback (flash)
-      btn.classList.add('flash-blocked');
-      setTimeout(() => btn.classList.remove('flash-blocked'), 300);
-      return;
-    }
-
-    // mark cooldown immediately so fast repeated clicks are ignored
-    startCooldown(feedbackId);
-
-    // disable buttons during the request
-    setButtonsState(feedbackId, true);
-
-    // prepare request (legacy format id/type)
-    const body = new URLSearchParams();
-    body.append('id', feedbackId);
-    body.append('type', voteType === 1 ? 'like' : 'dislike');
-
-    fetch('/ajax/feedback.php', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: body.toString()
-    })
-    .then(r => r.json().catch(() => ({ status: 'error' })))
+  fetch('/ajax/feedback.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString()
+  })
+    .then(r => r.json())
     .then(json => {
-      // success legacy: {status: 'success'} OR new endpoint: { success:true, data:{counts,userVote} }
-      if (json && json.status === 'success') {
-        // naive increment (legacy)
-        if (body.get('type') === 'like') {
-          const likeSpan = document.getElementById('likes-' + feedbackId);
-          if (likeSpan) likeSpan.textContent = parseInt(likeSpan.textContent || '0', 10) + 1;
-        } else {
-          const dis = document.getElementById('dislikes-' + feedbackId);
-          if (dis) dis.textContent = parseInt(dis.textContent || '0', 10) + 1;
-        }
-      } else if (json && json.success === true && json.data && json.data.counts) {
-        const counts = json.data.counts;
-        const likeSpan = document.getElementById('likes-' + feedbackId);
-        const dislikeSpan = document.getElementById('dislikes-' + feedbackId);
-        if (likeSpan) likeSpan.textContent = counts.likes;
-        if (dislikeSpan) dislikeSpan.textContent = counts.dislikes;
+      if (!json.success) {
+        alert('Erreur vote');
+        return;
+      }
 
-        // update active classes if provided
-        if (typeof json.data.userVote !== 'undefined') {
-          const likeBtn = document.getElementById('like-btn-' + feedbackId);
-          const dislikeBtn = document.getElementById('dislike-btn-' + feedbackId);
-          if (likeBtn) likeBtn.classList.toggle('active', json.data.userVote === 1);
-          if (dislikeBtn) dislikeBtn.classList.toggle('active', json.data.userVote === -1);
-        }
-      } else {
-        console.warn('Vote response unexpected', json);
+      const { likes, dislikes } = json.data.counts;
+      const userVote = json.data.userVote;
+
+      animateCounter('likes-' + feedbackId, likes);
+      animateCounter('dislikes-' + feedbackId, dislikes);
+
+      document.querySelectorAll(`.btn-vote[data-id="${feedbackId}"]`)
+        .forEach(b => b.classList.remove('active'));
+
+      if (userVote === 1) {
+        document.querySelector(`.btn-vote[data-id="${feedbackId}"][data-vote="1"]`)
+          .classList.add('active');
+      }
+      if (userVote === -1) {
+        document.querySelector(`.btn-vote[data-id="${feedbackId}"][data-vote="-1"]`)
+          .classList.add('active');
       }
     })
-    .catch(err => {
-      console.error('Vote error', err);
-      alert('Erreur réseau lors du vote.');
-    })
+    .catch(() => alert('Erreur réseau'))
     .finally(() => {
-      // Ensure buttons remain disabled for the full cooldown duration.
-      // Re-enable after COOLDOWN_MS
-      setTimeout(() => {
-        setButtonsState(feedbackId, false);
-      }, COOLDOWN_MS);
+      setTimeout(() => btn.dataset.locked = '0', 600);
     });
-  });
+});
 
-  // small CSS injection for quick feedback (optional; you can copy this to your CSS file)
-  (function injectCSS() {
-    const css = `
-    .btn-vote.flash-blocked { animation: blockedFlash 0.25s ease; }
-    @keyframes blockedFlash { 0% { transform: scale(1); } 50% { transform: scale(0.98); } 100% { transform: scale(1); } }
-    `;
-    const s = document.createElement('style'); s.textContent = css; document.head.appendChild(s);
-  })();
+function animateCounter(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
 
-})();
+  el.classList.add('counter-pop');
+  el.textContent = value;
+
+  setTimeout(() => el.classList.remove('counter-pop'), 300);
+}

@@ -2,70 +2,99 @@
 
 class Feedback
 {
-    private $conn;
+    private PDO $pdo;
 
-    public function __construct($db)
+    public function __construct(PDO $pdo)
     {
-        $this->conn = $db;
+        $this->pdo = $pdo;
     }
 
-    public function create($data)
-    {
-        $sql = "INSERT INTO feedbacks (tutorial_id, username, message) VALUES (?, ?, ?)";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([$data['tutorial_id'], $data['username'], $data['message']]);
-    }
-
-    public function getAll()
-    {
-        return $this->conn->query("SELECT * FROM feedbacks ORDER BY created_at DESC");
-    }
-
-    public function getAllWithTutorial()
+    /* =====================================================
+       CRÉATION D'UN FEEDBACK (COMMENTAIRE)
+    ====================================================== */
+    public function create(array $data): bool
     {
         $sql = "
-            SELECT f.*, t.title 
+            INSERT INTO feedbacks (tutorial_id, username, message, created_at)
+            VALUES (:tutorial_id, :username, :message, NOW())
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            'tutorial_id' => $data['tutorial_id'],
+            'username'    => $data['username'],
+            'message'     => $data['message']
+        ]);
+    }
+
+    /* =====================================================
+       VOTES (LIKE / DISLIKE)
+    ====================================================== */
+
+    public function getUserVote(int $feedbackId, int $userId): int
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT vote 
+             FROM feedback_votes 
+             WHERE feedback_id = ? AND user_id = ?"
+        );
+        $stmt->execute([$feedbackId, $userId]);
+        $vote = $stmt->fetchColumn();
+
+        return $vote !== false ? (int) $vote : 0;
+    }
+
+    public function saveVote(int $feedbackId, int $userId, int $vote): void
+    {
+        $stmt = $this->pdo->prepare(
+            "REPLACE INTO feedback_votes (feedback_id, user_id, vote)
+             VALUES (?, ?, ?)"
+        );
+        $stmt->execute([$feedbackId, $userId, $vote]);
+    }
+
+    public function deleteVote(int $feedbackId, int $userId): void
+    {
+        $stmt = $this->pdo->prepare(
+            "DELETE FROM feedback_votes 
+             WHERE feedback_id = ? AND user_id = ?"
+        );
+        $stmt->execute([$feedbackId, $userId]);
+    }
+
+    public function countVotes(int $feedbackId, int $vote): int
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT COUNT(*) 
+             FROM feedback_votes 
+             WHERE feedback_id = ? AND vote = ?"
+        );
+        $stmt->execute([$feedbackId, $vote]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /* =====================================================
+       FEEDBACKS PAR TUTORIEL
+    ====================================================== */
+
+    public function getByTutorial(int $tutorialId): array
+    {
+        $sql = "
+            SELECT f.*,
+                   COALESCE(SUM(CASE WHEN v.vote = 1 THEN 1 ELSE 0 END), 0) AS likes,
+                   COALESCE(SUM(CASE WHEN v.vote = -1 THEN 1 ELSE 0 END), 0) AS dislikes
             FROM feedbacks f
-            JOIN tutorials t ON t.id = f.tutorial_id
+            LEFT JOIN feedback_votes v ON v.feedback_id = f.id
+            WHERE f.tutorial_id = :tutorial_id
+            GROUP BY f.id
             ORDER BY f.created_at DESC
         ";
-        return $this->conn->query($sql);
-    }
 
-    public function delete($id)
-    {
-        $sql = "DELETE FROM feedbacks WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([$id]);
-    }
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute(['tutorial_id' => $tutorialId]);
 
-    public function addLike($id)
-    {
-        $sql = "UPDATE feedbacks SET likes = likes + 1 WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([$id]);
-    }
-
-    public function addDislike($id)
-    {
-        $sql = "UPDATE feedbacks SET dislikes = dislikes + 1 WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        return $stmt->execute([$id]);
-    }
-
-    public function getByTutorial($tutorial_id)
-    {
-        $sql = "SELECT * FROM feedbacks WHERE tutorial_id = ? ORDER BY created_at DESC";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$tutorial_id]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    public function getById($id)
-    {
-        $sql = "SELECT * FROM feedbacks WHERE id = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
 }

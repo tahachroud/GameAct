@@ -1,9 +1,9 @@
 <?php
 require_once "./model/Tutorial.php";
 require_once "./model/Feedback.php";
-require_once "./config/database.php";
+require_once "./config/db.php";
 
-$db = (new Database())->connect();
+$db = config::getconnexion();
 $tutorial = new Tutorial($db);
 $feedback = new Feedback();
 

@@ -6,10 +6,10 @@ if (!$item) {
     exit;
 }
 
-require_once "config/database.php";
+require_once "config/db.php";
 require_once "model/Feedback.php";
 
-$db = (new Database())->connect();
+$db = config::getconnexion();
 $fbModel = new Feedback($db);
 
 $feedbacks = $fbModel->getByTutorial($item["id"]);
@@ -123,7 +123,8 @@ $old    = $_SESSION["feedback_old"] ?? [];
 <body>
 
 <!-- 🔥 Header -->
-<?php include __DIR__ . "/header.php"; ?>
+<?php include __DIR__ . "/headertuto.php"; ?>
+
 
 
 <div class="container mt-5">
@@ -197,7 +198,7 @@ $old    = $_SESSION["feedback_old"] ?? [];
 </div>
 
 <!-- Footer -->
-<?php include __DIR__ . "/footer.php"; ?>
+<?php include __DIR__ . "/footertuto.php"; ?>
 
 
 <!-- 🔥 AJAX -->

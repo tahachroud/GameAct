@@ -1,11 +1,18 @@
 <?php
 
-require "./config/database.php";
+// ==========================================
+// UPDATED: Changed from database.php to db.php
+// Uses team's standard config class
+// ==========================================
+require "./config/db.php";  // ✅ CHANGED: was database.php
 require "./controller/TutorialController.php";
 require "./controller/FeedbackController.php";
 require "./controller/AdminController.php";
 
-$db = (new Database())->connect();
+// ==========================================
+// UPDATED: Changed from Database class to config class
+// ==========================================
+$db = config::getConnexion();  // ✅ CHANGED: was (new Database())->connect()
 $controller = new TutorialController($db);
 
 $action = $_GET["action"] ?? "index";
@@ -39,16 +46,19 @@ switch ($action) {
     // MODIFICATION ICI : Remplacement de l'action 'categories' par 'rank'
     case "rank":
         // IMPORTANT : La méthode getRankedTutorials() doit exister et trier par likes.
-        case "rank":
-        // Cette ligne va maintenant fonctionner :
-        $tutorials = $controller->getRankedTutorials(); 
+        $tutorials = $controller->getRankedTutorials();
         require "./view/front/rank.php"; // Charge la nouvelle vue
         exit;
-        require "./view/front/rank.php"; // Charge la nouvelle vue
-        exit;
-    
+   
     case "about":
         require "./view/front/about.php";
+        exit;
+       
+    // ==========================================
+    // NEW: AJAX Search Endpoint (if using server-side search)
+    // ==========================================
+    case "searchTutorials":
+        $controller->searchTutorials();
         exit;
 }
 
