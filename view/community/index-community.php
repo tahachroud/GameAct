@@ -1,17 +1,37 @@
-<?php $default_user = 5; ?> 
+<?php 
+// Redirect to proper controller if accessed directly
+if (!isset($GLOBALS['feed'])) {
+    header('Location: /gameact_shop/index-community.php?action=community');
+    exit();
+}
+
+$default_user = 5; 
+?> 
 
 <?php
 require_once __DIR__ . '/../../model/Share.php';
-$shareModel = new Share(); 
+$shareModel = new Share();
+
+// Get variables from GLOBALS set by controller
+$feed = $GLOBALS['feed'] ?? [];
+$postModel = $GLOBALS['postModel'] ?? null;
+$trending = $GLOBALS['trending'] ?? [];
+$topContributors = $GLOBALS['topContributors'] ?? [];
+$activePoll = $GLOBALS['activePoll'] ?? null;
+$topHashtags = $GLOBALS['topHashtags'] ?? [];
+$selectedTag = $GLOBALS['selectedTag'] ?? null;
+
+// Base URL for assets
+$baseUrl = 'http://' . $_SERVER['HTTP_HOST'] . '/gameact_shop';
 ?>
 
 <div class="container mt-4">
     <div class="card composer mb-5">
 
-        <form id="composerForm" action="index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
+        <form id="composerForm" action="<?= $baseUrl ?>/index-community.php?action=posts_store_front" method="POST" enctype="multipart/form-data">
 
             <div class="composer-top d-flex">
-                <img class="avatar" src="public/assets/images/avatar-01.jpg" alt="">
+                <img class="avatar" src="<?= $baseUrl ?>/public/assets/images/avatar-01.jpg" alt="">
                 <textarea name="content" class="form-control" placeholder="Share something..."></textarea>
             </div>
 

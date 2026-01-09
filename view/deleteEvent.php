@@ -1,6 +1,6 @@
 <?php
 
-require_once('C:\xampp\htdocs\events\controller\eventC.php');
+require_once(__DIR__ . '/../controller/eventC.php');
 
 $eventC = new EventC();
 

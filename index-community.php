@@ -12,7 +12,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$db = (new config())->getConnection();
+$db = config::getConnexion();
 
 $action = $_GET['action'] ?? 'dashboard';
 
